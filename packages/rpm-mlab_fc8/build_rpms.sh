@@ -3,7 +3,8 @@
 set -o nounset
 set -e errexit
 
-function prompt_yn() # $1 is prompt, $2 is default (Y|N)
+function prompt_yn()
+# $1 is prompt, $2 is default (Y|N)
 {
     ([[ ! -z ${1:-} ]] && [[ ! -z ${2:-} ]]) || \
             (echo "prompt_yn requires 2 arguments." && exit 1)
@@ -32,6 +33,7 @@ function prompt_yn() # $1 is prompt, $2 is default (Y|N)
 }
 
 function check_cmd()
+# $1 is command to look for, $2 (optional) is package to install if not found
 {
     [[ ! -z ${1:-} ]] ||
             (echo "check_cmd requires at least 1 argument." && exit 1)
@@ -49,20 +51,24 @@ function check_cmd()
     fi
 }
 
-relroot=$(dirname "$0")
-absroot="$PWD/$relroot"
+# determine absolute path to this script (won't work if called through $PATH)
+relpath=$(dirname "$0")
+abspath="$PWD/$relpath"
 
+# check for essential commands and packages
 check_cmd 'rpm' 'rpm'
 check_cmd 'rpmdev-setuptree' 'rpmdevtools'
 
 rpmbuild_topdir=$(rpm --eval '%{_topdir}')
 
+# confirm rpmdev-setuptree in $HOME
 if [[ "$USER" != 'makerpm' ]] &&
         [[ "$(dirname $rpmbuild_topdir)" != "$HOME" ]]; then
     prompt_yn "User '$USER' doesn't look like a build account.
                Are you sure you want to set up an rpmbuild directory in this
                user's home directory?" "N" || exit 2
 fi
+# confirm rpmdev-wipetree if $HOME/rpmbuild already exists
 if [[ "$(dirname $rpmbuild_topdir)" == "$HOME" ]]; then
     prompt_yn "This will destroy the contents of '$rpmbuild_topdir'.
                Do you want to continue?" "N" || exit 2
@@ -75,12 +81,18 @@ rpmbuild_topdir=$(rpm --eval '%{_topdir}')
 rpmbuild_sources=$(rpm --eval '%{_sourcedir}')
 rpmbuild_specs=$(rpm --eval '%{_specdir}')
 
-for specdir in $(find $absroot -mindepth 1 -maxdepth 1 -type d)
+# copy bismark-mserver source from repo directory into %{_sourcedir}
+cd $abspath/../../
+tar cz bismark-mserver > $rpmbuild_sources/bismark-mserver.tar.gz
+
+# symlink spec files from repo into %{_specdir}
+for specdir in $(find $abspath -mindepth 1 -maxdepth 1 -type d)
 do
     pkg=$(basename $specdir)
     if [[ -e "$specdir/$pkg.spec" ]]; then
         ln -s "$specdir/$pkg.spec" "$rpmbuild_specs"
-        for srcfile in $(find $specdir -mindepth 1 -maxdepth 1 ! -name $pkg.spec)
+        for srcfile in $(find $specdir \
+                -mindepth 1 -maxdepth 1 ! -name $pkg.spec)
         do
             cp -a "$srcfile" "$rpmbuild_sources"
         done
@@ -89,11 +101,13 @@ done
 
 specfiles=$(find $rpmbuild_specs -mindepth 1 -maxdepth 1 -name *.spec)
 
+# get sources indicated in specfiles
 for specfile in $specfiles
 do
     spectool --get-files --directory $rpmbuild_sources $specfile
 done
 
+# build RPMs
 for specfile in $specfiles
 do
     rpmbuild -ba $specfile
