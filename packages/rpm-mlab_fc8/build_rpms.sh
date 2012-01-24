@@ -75,12 +75,10 @@ rpmbuild_specs=$(rpm --eval '%specdir')
 for specdir in $(find ./ -mindepth 1 -maxdepth 1 -type d)
 do
     pkg=$(basename $specdir)
-    #ln -s "$specdir/$pkg.spec" "$rpmbuild_specs"
-    echo "ln -s" "$specdir/$pkg.spec" "$rpmbuild_specs"
+    ln -s "$specdir/$pkg.spec" "$rpmbuild_specs"
     for srcfile in $(find $specdir -mindepth 1 -maxdepth 1 ! -name $pkg.spec)
     do
-        #cp -a "$srcfile" "$rpmbuild_sources"
-        echo "cp -a" "$srcfile" "$rpmbuild_sources"
+        cp -a "$srcfile" "$rpmbuild_sources"
     done
 done
 
@@ -88,12 +86,10 @@ specfiles=$(find $rpmbuild_specs -mindepth 1 -maxdepth 1 -name *.spec)
 
 for specfile in $specfiles
 do
-    #spectool --get-files --directory $rpmbuild_sources $specfile
-    echo "spectool --get-files --directory $rpmbuild_sources $specfile"
+    spectool --get-files --directory $rpmbuild_sources $specfile
 done
 
 for specfile in $specfiles
 do
-    #rpmbuild -ba $specfile
-    echo "rpmbuild -ba $specfile"
+    rpmbuild -ba $specfile
 done
