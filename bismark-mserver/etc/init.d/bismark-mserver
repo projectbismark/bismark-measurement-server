@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 # Script to check/respawn measurement services
 
 # Load configuration
@@ -11,3 +11,6 @@ sudo netstat -lntp | grep -q $ITG_UP_PORT.*ITGRecv || ~/scripts/itg_up
 sudo netstat -lntp | grep -q 55005.*probeserver || ( killall probeserver ; ~/bin/probeserver >> /tmp/spserver.log 2>&1 & )
 sudo netstat -lntp | grep -q 443.*netserver || ( sudo ~/bin/netserver -p 443 -4 >> /tmp/netserver_443.log 2>&1 & )
 sudo netstat -lntp | grep -q 12865.*netserver || ( ~/bin/netserver >> /tmp/netserver.log 2>&1 & )
+
+#stop
+sudo killall probeserver ITGRecv socat
