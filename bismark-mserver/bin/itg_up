@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# Load configuration
-. ~/etc/mserver.conf
+# bismark-mserver upstream bitrate, packet loss, jitter (D-ITG) measurements
 
-if [ $ITG_UP_PORT -le 1024 ]; then
-	( sudo ~/bin/ITGRecv -Si $IFNAME -Sp $ITG_UP_PORT >> /tmp/itg.log 2>&1 & )
+# Load configuration
+source /etc/bismark-mserver.conf
+
+if [ $ITG_UP_PORT -ge 1024 ]; then
+    ( ITGRecv -Sp $ITG_UP_PORT >> /tmp/itg.log 2>&1 & )
 else
-	( ~/bin/ITGRecv -Sp $ITG_UP_PORT >> /tmp/itg.log 2>&1 & )
+    echo "Sorry, $0 can't bind to ports < 1024. Terminating."
+    exit 1
 fi
 

@@ -1,16 +1,19 @@
 #!/bin/bash
 
+# bismark-mserver downstream bitrate, packet loss, jitter (D-ITG) measurements
+
 # Load configuration
-. ~/etc/mserver.conf
+source /etc/bismark-mserver.conf
 
 # If launched without options starts the socat listener
 if [ ! $1 ]; then
-	if [ $ITG_DW_PORT -le 1024 ]; then
-		sudo socat TCP-LISTEN:$ITG_DW_PORT,fork,reuseaddr EXEC:"$0 run",su-d=$LOGNAME,pipes &
-	else
-		socat TCP-LISTEN:$ITG_DW_PORT,fork,reuseaddr EXEC:"$0 run",pipes &
-	fi
-	exit
+    if [ $ITG_DW_PORT -ge 1024 ]; then
+        socat TCP-LISTEN:$ITG_DW_PORT,fork,reuseaddr EXEC:"$0 run",pipes &
+    else
+        echo "Sorry, $0 can't bind to ports < 1024. Terminating."
+        exit 1
+    fi
+    exit
 fi
 
 # Parse input
@@ -18,23 +21,26 @@ read cmd opt
 
 case $cmd in
 send)
-	if [ ${opt:0:2} == "-H" ]; then
-		id=$(echo $opt | md5sum | cut -c 1-10)
-		echo "$id start $(date +%s) ($opt)" >> /tmp/itg_dw.log
-		~/bin/ITGSend $opt 2>&1 | awk '{ "date +%s" | getline date ; print "'$id' " date " " $0 ; fflush() }' >> /tmp/itg_dw.log &
-		pid=$(( $! - 1 ))
-		echo "$id pid $pid" >> /tmp/itg_dw.log
-	fi
+    if [ ${opt:0:2} == "-H" ]; then
+        id=$(echo $opt | md5sum | cut -c 1-10)
+        echo "$id start $(date +%s) ($opt)" >> /tmp/itg_dw.log
+        ITGSend $opt 2>&1 | \
+                awk '{ "date +%s" | getline date ; \
+                print "'$id' " date " " $0 ; fflush() }' >> /tmp/itg_dw.log &
+        pid=$(( $! - 1 ))
+        echo "$id pid $pid" >> /tmp/itg_dw.log
+    fi
 ;;
 log)
-	echo $cmd - $opt >> /tmp/itg.log
-	~/bin/ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 $opt.bitrate 2> /dev/null
-	echo bitrate
-	awk '(NR > 1){ print $3 }' $opt.bitrate
-	echo jitter
-	awk '(NR > 1){ print $3 }' $opt.jitter
-	echo pktloss
-	awk '(NR > 1){ print $3 }' $opt.pktloss
-	rm $opt $opt.*
+    echo $cmd - $opt >> /tmp/itg.log
+    ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 $opt.bitrate \
+            2> /dev/null
+    echo bitrate
+    awk '(NR > 1){ print $3 }' $opt.bitrate
+    echo jitter
+    awk '(NR > 1){ print $3 }' $opt.jitter
+    echo pktloss
+    awk '(NR > 1){ print $3 }' $opt.pktloss
+    rm $opt $opt.*
 ;;
 esac
