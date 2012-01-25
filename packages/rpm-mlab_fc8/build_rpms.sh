@@ -73,6 +73,14 @@ if [[ "$(dirname $rpmbuild_topdir)" == "$HOME" ]]; then
     prompt_yn "This will destroy the contents of '$rpmbuild_topdir'.
                Do you want to continue?" "N" || exit 2
 fi
+# sign packages?
+rpmbuild_sign=''
+if [[ "$(rpm --eval '%_gpg_name')" != "%_gpg_name" ]] && \
+        prompt_yn "Sign RPMs with GPG?" "Y"; then
+    rpmbuild_sign='--sign'
+fi
+
+
 
 rpmdev-setuptree
 rpmdev-wipetree
@@ -110,5 +118,5 @@ done
 # build RPMs
 for specfile in $specfiles
 do
-    rpmbuild -ba $specfile
+    rpmbuild $rpmbuild_sign -ba $specfile
 done
