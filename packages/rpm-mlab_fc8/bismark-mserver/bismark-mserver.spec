@@ -6,7 +6,7 @@ License: GPLv2
 Group: Applications/Internet
 URL: http://redmine.noise.gatech.edu/projects/bismark-mserver
 
-Source: 
+Source: bismark-mserver.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildArch: noarch
@@ -27,7 +27,13 @@ for Project BISmark routers.
 %install
 %{__rm} -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}
-cp -p bin/ %{buildroot}%{_bindir}
+cp -p bin/bismark-* %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_sysconfdir}
+cp -p etc/bismark-mserver.conf %{buildroot}%{_sysconfdir}
+mkdir -p %{buildroot}%{_sysconfdir}/cron.d
+cp -p etc/cron.d/bismark-mserver %{buildroot}%{_sysconfdir}/cron.d
+mkdir -p %{_initrddir}  # %{_initrddir} is deprecated as of fedora 10
+cp -p etc/init.d/bismark-mserver %{_initrddir}
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -35,7 +41,10 @@ cp -p bin/ %{buildroot}%{_bindir}
 %files
 %defattr(-, root, root, 0755)
 %doc LICENSE README
-%{_bindir}/
+%{_bindir}/bismark-*
+%{_sysconfdir}/bismark-mserver.conf
+%{_sysconfdir}/cron.d/bismark-mserver
+%{_initrddir}/bismark-mserver
 
 %changelog
 * Mon Jan 23 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.0.1-1
