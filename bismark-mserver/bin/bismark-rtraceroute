@@ -8,7 +8,8 @@ source /etc/bismark-mserver.conf
 # If launched without options starts the socat listener
 if [ ! $1 ]; then
     if [ $RTR_PORT -ge 1024 ]; then
-        socat TCP-LISTEN:$RTR_PORT,fork,reuseaddr EXEC:"$0 run",pipes &
+        socat -T INACTIVITY_TIMEOUT TCP-LISTEN:$RTR_PORT,fork,reuseaddr \
+                EXEC:"$0 run",pipes &
     else
         echo "Sorry, $0 can't bind to ports < 1024. Terminating."
         exit 1
