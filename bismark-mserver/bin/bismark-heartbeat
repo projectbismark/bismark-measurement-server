@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+
+source /etc/bismark-mserver.conf
+
+heartbeat_msg="/tmp/bismark_heartbeat_message"
+
+default_if=$(/sbin/ip route | grep default | head -n 1 | \
+             grep -oP "dev\s+\S+" | awk -F ' ' '{print $2}')
+global_ip=$(/sbin/ip addr show dev "$default_if" |
+            grep -oP '^\s+inet\s(\d+\.){3}\d+' | head -n 1 | \
+            awk -F ' ' '{print $2}')
+hostname=$(hostname)
+pkg_version=$(rpm --query bismark-mserver \
+                  --queryformat %{VERSION}-%{RELEASE} &> /dev/null \
+              || echo 'N/A')
+
+echo "{
+      \"ip\":                      \"$global_ip\",
+      \"bismark-mserver_version\": \"$pkg_version\"
+      }" > $heartbeat_msg
+
+curl --request PUT \
+     --upload-file $heartbeat_msg \
+     --header 'Content-Type: application/json' \
+     -4 -s "$HTTP_MGMT_SERVER:$HTTP_MGMT_PORT/mservers/$hostname"
+
+rm $heartbeat_msg
+
