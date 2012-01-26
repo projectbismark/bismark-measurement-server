@@ -19,7 +19,7 @@ run)
     # only proceed if actually started via initscript
     if [ ! -f $MSERVER_LOCKFILE ]; then
         echo "Start by running '$INITD_FILE start'."
-        exit 1
+        exit 0
     fi
 
     for daemon in $daemons
@@ -42,7 +42,7 @@ stop)
     # only proceed if actually started via initscript
     if [ -f $MSERVER_LOCKFILE ]; then
         echo "Stop by running '$INITD_FILE stop'."
-        exit 1
+        exit 0
     fi
 
     for daemon in $daemons
