@@ -90,7 +90,6 @@ fi
 
 if [[ "$rebuild" == 'y' ]]; then
     rpmdev-setuptree
-    rpmdev-wipetree
 fi
 
 rpmbuild_topdir=$(rpm --eval '%{_topdir}')
@@ -98,6 +97,14 @@ rpmbuild_sources=$(rpm --eval '%{_sourcedir}')
 rpmbuild_specs=$(rpm --eval '%{_specdir}')
 rpmbuild_rpms=$(rpm --eval '%{_rpmdir}')
 rpmbuild_srpms=$(rpm --eval '%{_srcrpmdir}')
+
+if [[ "$rebuild" == 'y' ]]; then
+    rpmdev-wipetree
+else
+    # partially clean
+    rm -rf "$rpmbuild_rpms"/*
+    rm -rf "$rpmbuild_srpms"/*
+fi
 
 # symlink spec files from repo into %{_specdir}
 for specdir in $(find $abspath -mindepth 1 -maxdepth 1 -type d)
