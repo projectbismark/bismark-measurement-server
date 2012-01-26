@@ -126,15 +126,21 @@ done
 # start creating web repository
 webdir="$rpmbuild_topdir/www/mlab_fedora/releases/8/"
 rm -rf "$webdir"
+
+# copy RPMs
 mkdir -p "$webdir/i386/Packages"
+find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 ! -name '*-debuginfo-*' \
+        -exec cp '{}' "$webdir/i386/Packages/" \;
+cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/Packages/"
+
+# copy debuginfo RPMs
+mkdir -p "$webdir/i386/debug"
+find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 -name '*-debuginfo-*' \
+        -exec cp '{}' "$webdir/i386/debug/" \;
 
 # copy SRPMs
 mkdir -p "$webdir/source/SRPMS"
 cp -a "$rpmbuild_srpms"/*.src.rpm "$webdir/source/SRPMS/"
-
-# copy RPMs
-cp -a "$rpmbuild_rpms/i386/"*.rpm "$webdir/i386/Packages/"
-cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/Packages/"
 
 # make RPM repodata
 createrepo -o "$webdir/i386" -v -d "$webdir/i386/Packages/"
@@ -143,4 +149,4 @@ createrepo -o "$webdir/i386" -v -d "$webdir/i386/Packages/"
 gpg --detach-sign --armor "$webdir/i386/repodata/repomd.xml"
 
 # export GPG key
-gpg --export --armor 16A7D193 > "$webdir/i386/RPM-GPG-KEY-bismark"
+gpg --export --armor > "$webdir/i386/RPM-GPG-KEY-bismark"
