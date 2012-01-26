@@ -51,6 +51,10 @@ function check_cmd()
     fi
 }
 
+# globals
+
+rebuild='y'
+
 # determine absolute path to this script (won't work if called through $PATH)
 relpath=$(dirname "$0")
 abspath="$PWD/$relpath"
@@ -70,8 +74,12 @@ if [[ "$USER" != 'makerpm' ]] &&
 fi
 # confirm rpmdev-wipetree if $HOME/rpmbuild already exists
 if [[ "$(dirname $rpmbuild_topdir)" == "$HOME" ]]; then
-    prompt_yn "This will destroy the contents of '$rpmbuild_topdir'.
-               Do you want to continue?" "N" || exit 2
+    if [[ ! -z ${1:-} ]] && [[ "$1" == "--norebuild" ]]; then
+        rebuild='n'
+    else
+        prompt_yn "This will destroy the contents of '$rpmbuild_topdir'.
+                   Do you want to continue?" "N" || exit 2
+    fi
 fi
 # sign packages?
 rpmbuild_sign=''
@@ -80,20 +88,16 @@ if [[ "$(rpm --eval '%_gpg_name')" != "%_gpg_name" ]] && \
     rpmbuild_sign='--sign'
 fi
 
-
-
-rpmdev-setuptree
-rpmdev-wipetree
+if [[ "$rebuild" == 'y' ]]; then
+    rpmdev-setuptree
+    rpmdev-wipetree
+fi
 
 rpmbuild_topdir=$(rpm --eval '%{_topdir}')
 rpmbuild_sources=$(rpm --eval '%{_sourcedir}')
 rpmbuild_specs=$(rpm --eval '%{_specdir}')
 rpmbuild_rpms=$(rpm --eval '%{_rpmdir}')
 rpmbuild_srpms=$(rpm --eval '%{_srcrpmdir}')
-
-# copy bismark-mserver source from repo directory into %{_sourcedir}
-cd $abspath/../../
-tar cz bismark-mserver > $rpmbuild_sources/bismark-mserver.tar.gz
 
 # symlink spec files from repo into %{_specdir}
 for specdir in $(find $abspath -mindepth 1 -maxdepth 1 -type d)
@@ -111,11 +115,17 @@ done
 
 specfiles=$(find $rpmbuild_specs -mindepth 1 -maxdepth 1 -name *.spec)
 
-# get sources indicated in specfiles
-for specfile in $specfiles
-do
-    spectool --get-files --directory $rpmbuild_sources $specfile
-done
+if [[ "$rebuild" == 'y' ]]; then
+    # get sources indicated in specfiles
+    for specfile in $specfiles
+    do
+        spectool --get-files --directory $rpmbuild_sources $specfile
+    done
+fi
+
+# copy bismark-mserver source from repo directory into %{_sourcedir}
+cd $abspath/../../
+tar cz bismark-mserver > $rpmbuild_sources/bismark-mserver.tar.gz
 
 # build RPMs
 for specfile in $specfiles
@@ -128,10 +138,10 @@ webdir="$rpmbuild_topdir/www/mlab_fedora/releases/8/"
 rm -rf "$webdir"
 
 # copy RPMs
-mkdir -p "$webdir/i386/Packages"
+mkdir -p "$webdir/i386/os/Packages"
 find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 ! -name '*-debuginfo-*' \
-        -exec cp '{}' "$webdir/i386/Packages/" \;
-cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/Packages/"
+        -exec cp '{}' "$webdir/i386/os/Packages/" \;
+cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/os/Packages/"
 
 # copy debuginfo RPMs
 mkdir -p "$webdir/i386/debug"
@@ -143,10 +153,10 @@ mkdir -p "$webdir/source/SRPMS"
 cp -a "$rpmbuild_srpms"/*.src.rpm "$webdir/source/SRPMS/"
 
 # make RPM repodata
-createrepo -o "$webdir/i386" -v -d "$webdir/i386/Packages/"
+createrepo -o "$webdir/i386/os" -v -d "$webdir/i386/os/Packages/"
 
 # sign repomd.xml
-gpg --detach-sign --armor "$webdir/i386/repodata/repomd.xml"
+gpg --detach-sign --armor "$webdir/i386/os/repodata/repomd.xml"
 
 # export GPG key
-gpg --export --armor > "$webdir/i386/RPM-GPG-KEY-bismark"
+gpg --export --armor > "$webdir/i386/os/RPM-GPG-KEY-bismark"
