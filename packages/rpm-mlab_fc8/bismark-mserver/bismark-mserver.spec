@@ -15,7 +15,8 @@ Requires: iperf >= 2.0.4
 Requires: ditg = 2.8.0
 Requires: shaperprobe-server
 Requires: socat
-Requires: monit
+Requires: curl
+# Requires: monit  # save this for later release
 
 %description
 Sets up a BISmark measurement server capable of sourcing and sinking traffic
@@ -27,7 +28,7 @@ for Project BISmark routers.
 %install
 %{__rm} -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}
-cp -p bin/bismark-* %{buildroot}%{_bindir}
+cp -p bin/bismark-mserver* %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sysconfdir}
 cp -p etc/bismark-mserver.conf %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}%{_sysconfdir}/cron.d
@@ -41,7 +42,7 @@ cp -p etc/init.d/bismark-mserver %{_initrddir}
 %files
 %defattr(-, root, root, 0755)
 %doc LICENSE README
-%{_bindir}/bismark-*
+%{_bindir}/bismark-mserver*
 %{_sysconfdir}/bismark-mserver.conf
 %{_sysconfdir}/cron.d/bismark-mserver
 %{_initrddir}/bismark-mserver
