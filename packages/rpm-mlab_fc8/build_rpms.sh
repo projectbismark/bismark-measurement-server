@@ -125,6 +125,7 @@ done
 
 # start creating web repository
 webdir="$rpmbuild_topdir/www/mlab_fedora/releases/8/"
+rm -rf "$webdir"
 mkdir -p "$webdir/i386/Packages"
 
 # copy SRPMs
