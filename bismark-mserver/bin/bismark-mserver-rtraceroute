@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # bismark-mserver reverse traceroute (RTR)
 
@@ -6,19 +6,20 @@ set -o nounset
 set -o errexit
 
 # Load configuration
-source /etc/bismark-mserver.conf
+. /etc/bismark-mserver.conf
 
-function start_socat()
+start_socat()
 # $1 is port number, $2 is 'echopid'
 {
-    if [ "$1" -lt 1024 ] && [ "$UID" -ne 0 ]; then
+    if [ "$1" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
         echo "Sorry, $0 can't bind to ports < 1024. Terminating."
         exit 1
     fi
 
     socat -T INACTIVITY_TIMEOUT TCP-LISTEN:$1,fork,reuseaddr \
             EXEC:"$0 exec",pipes &
-    if [ "$2" == 'echopid' ]; then
+
+    if [ "$2" = 'echopid' ]; then
         echo $!
     fi
     exit 0

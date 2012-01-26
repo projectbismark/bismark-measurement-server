@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # Script to run and kill measurement services
 
 set -o nounset

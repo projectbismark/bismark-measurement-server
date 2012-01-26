@@ -1,9 +1,12 @@
-#!/bin/bash
+#!/bin/sh
+
+# Register slice IP address and package version with mserver management server
 
 set -o nounset
 set -o errexit
 
-source /etc/bismark-mserver.conf
+# Load configuration
+. /etc/bismark-mserver.conf
 
 heartbeat_msg="/tmp/bismark_heartbeat_message"
 
@@ -14,7 +17,7 @@ global_ip=$(/sbin/ip addr show dev "$default_if" |
             awk -F ' ' '{print $2}')
 hostname=$(hostname)
 pkg_version=$(rpm --query bismark-mserver \
-                  --queryformat %{VERSION}-%{RELEASE} &> /dev/null \
+                  --queryformat %{VERSION}-%{RELEASE} 2>&1 > /dev/null \
               || echo 'N/A')
 
 echo "{

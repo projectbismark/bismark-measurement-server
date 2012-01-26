@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # bismark-mserver link capacity and traffic shaping (shaperprobe) measurements
 
@@ -6,7 +6,7 @@ set -o nounset
 set -o errexit
 
 # Load configuration
-source /etc/bismark-mserver.conf
+. /etc/bismark-mserver.conf
 
 probeserver 2>&1 >> /tmp/bismark-mserver-probeserver.log &
 
