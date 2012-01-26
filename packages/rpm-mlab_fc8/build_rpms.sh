@@ -139,7 +139,7 @@ cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/Packages/"
 createrepo -o "$webdir/i386" -v -d "$webdir/i386/Packages/"
 
 # sign repomd.xml
-gpg --detatch-sign --armor "$webdir/i386/repodata/repomd.xml"
+gpg --detach-sign --armor "$webdir/i386/repodata/repomd.xml"
 
 # export GPG key
 gpg --export --armor 16A7D193 > "$webdir/i386/RPM-GPG-KEY-bismark"
