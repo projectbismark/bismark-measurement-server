@@ -88,6 +88,8 @@ rpmdev-wipetree
 rpmbuild_topdir=$(rpm --eval '%{_topdir}')
 rpmbuild_sources=$(rpm --eval '%{_sourcedir}')
 rpmbuild_specs=$(rpm --eval '%{_specdir}')
+rpmbuild_rpms=$(rpm --eval '%{_rpmdir}')
+rpmbuild_srpms=$(rpm --eval '%{_srcrpmdir}')
 
 # copy bismark-mserver source from repo directory into %{_sourcedir}
 cd $abspath/../../
@@ -120,3 +122,24 @@ for specfile in $specfiles
 do
     rpmbuild $rpmbuild_sign -ba $specfile
 done
+
+# start creating web repository
+webdir="$rpmbuild_topdir/www/mlab_fedora/releases/8/"
+mkdir -p "$webdir/i386/Packages"
+
+# copy SRPMs
+mkdir -p "$webdir/source/SRPMS"
+cp -a "$rpmbuild_srpms"/*.src.rpm "$webdir/source/SRPMS/"
+
+# copy RPMs
+cp -a "$rpmbuild_rpms/i386/"*.rpm "$webdir/i386/Packages/"
+cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/Packages/"
+
+# make RPM repodata
+createrepo -o "$webdir/i386" -v -d "$webdir/i386/Packages/"
+
+# sign repomd.xml
+gpg --detatch-sign --armor "$webdir/i386/repodata/repomd.xml"
+
+# export GPG key
+gpg --export --armor 16A7D193 > "$webdir/i386/RPM-GPG-KEY-bismark"
