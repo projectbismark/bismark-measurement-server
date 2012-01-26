@@ -33,8 +33,8 @@ mkdir -p %{buildroot}%{_sysconfdir}
 cp -p etc/bismark-mserver.conf %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}%{_sysconfdir}/cron.d
 cp -p etc/cron.d/bismark-mserver %{buildroot}%{_sysconfdir}/cron.d
-mkdir -p %{_initrddir}  # %{_initrddir} is deprecated as of fedora 10
-cp -p etc/init.d/bismark-mserver %{_initrddir}
+mkdir -p %{buildroot}%{_initrddir}  # %{_initrddir} is deprecated as of fc10
+cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 
 %clean
 %{__rm} -rf %{buildroot}
