@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # bismark-mserver Start/stop the BISmark measurement server tools
 #
@@ -16,26 +16,31 @@
 ### END INIT INFO
 
 # Source function library.
-source /etc/rc.d/init.d/functions
+. /etc/rc.d/init.d/functions
 
 # Source config file for lockfile name
-source /etc/bismark-mserver.conf
+. /etc/bismark-mserver.conf
 
 exec="/usr/bin/bismark-mserver-daemon"
 prog="bismark-mserver"
 config="/etc/bismark-mgmt.conf"
 
+# keep rpmlint happy
+lockfile="/var/lock/subsys/bismark-mserver"
+[ $lockfile != $MSERVER_LOCKFILE ] && \
+        echo "$0: lockfile inconsistent with MSERVER_LOCKFILE."
+
 start() {
     [ -x $exec ] || exit 5
     [ -f $config ] || exit 6
-    echo -n $"Starting $prog: "
+    echo -n "Starting $prog: "
     touch $MSERVER_LOCKFILE
     /usr/bin/bismark-mserver run
     return 0
 }
 
 stop() {
-    echo -n $"Stopping $prog: "
+    echo -n "Stopping $prog: "
     rm -f $MSERVER_LOCKFILE
     /usr/bin/bismark-mserver stop
     return 0
@@ -100,7 +105,7 @@ case "$1" in
         restart
         ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        echo "Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
         exit 2
 esac
 exit $?

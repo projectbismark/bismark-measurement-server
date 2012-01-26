@@ -16,6 +16,8 @@ Requires: ditg = 2.8.0
 Requires: shaperprobe-server
 Requires: socat
 Requires: curl
+Requires(post): chkconfig
+Requires(preun): chkconfig, initscripts
 # Requires: monit  # save this for later release
 
 %description
@@ -43,9 +45,18 @@ cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 %defattr(-, root, root, 0755)
 %doc LICENSE README
 %{_bindir}/bismark-mserver*
-%{_sysconfdir}/bismark-mserver.conf
-%{_sysconfdir}/cron.d/bismark-mserver
+%config(noreplace) %{_sysconfdir}/bismark-mserver.conf
+%config(noreplace) %{_sysconfdir}/cron.d/bismark-mserver
 %{_initrddir}/bismark-mserver
+
+%post
+/sbin/chkconfig --add %{name}
+
+%preun
+if [ $1 -eq 0 ]; then
+    /sbin/service %{name} stop > /dev/null 2>&1
+    /sbin/chkconfig --del %{name}
+fi
 
 %changelog
 * Mon Jan 23 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.0.1-1
