@@ -2,46 +2,73 @@
 
 # bismark-mserver downstream bitrate, packet loss, jitter (D-ITG) measurements
 
+set -o nounset
+set -o errexit
+
 # Load configuration
 source /etc/bismark-mserver.conf
 
-# If launched without options starts the socat listener
-if [ ! $1 ]; then
-    if [ $ITG_DW_PORT -ge 1024 ]; then
-        socat -T $INACTIVITY_TIMEOUT TCP-LISTEN:$ITG_DW_PORT,fork,reuseaddr \
-                EXEC:"$0 run",pipes &
-    else
+function start_socat()
+# $1 is port number, $2 is 'echopid'
+{
+    if [ "$1" -lt 1024 ] && [ "$UID" -ne 0 ]; then
         echo "Sorry, $0 can't bind to ports < 1024. Terminating."
         exit 1
     fi
-    exit
+
+    socat -T INACTIVITY_TIMEOUT TCP-LISTEN:$1,fork,reuseaddr \
+            EXEC:"$0 exec",pipes &
+    if [ "$2" == 'echopid' ]; then
+        echo $!
+    fi
+    exit 0
+}
+
+if [ -z ${1:-} ]; then
+    start_socat $ITG_DW_PORT 'noechopid'
 fi
 
-# Parse input
-read cmd opt
-
-case $cmd in
-send)
-    if [ ${opt:0:2} == "-H" ]; then
-        id=$(echo $opt | md5sum | cut -c 1-10)
-        echo "$id start $(date +%s) ($opt)" >> /tmp/itg_dw.log
-        ITGSend $opt 2>&1 | \
-                awk '{ "date +%s" | getline date ; \
-                print "'$id' " date " " $0 ; fflush() }' >> /tmp/itg_dw.log &
-        pid=$(( $! - 1 ))
-        echo "$id pid $pid" >> /tmp/itg_dw.log
-    fi
-;;
-log)
-    echo $cmd - $opt >> /tmp/itg.log
-    ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 $opt.bitrate \
-            2> /dev/null
-    echo bitrate
-    awk '(NR > 1){ print $3 }' $opt.bitrate
-    echo jitter
-    awk '(NR > 1){ print $3 }' $opt.jitter
-    echo pktloss
-    awk '(NR > 1){ print $3 }' $opt.pktloss
-    rm $opt $opt.*
-;;
+case "$1" in
+echopid)
+    start_socat $ITG_DW_PORT 'echopid'
+    ;;
+exec)
+    logfile='/tmp/bismark-mserver-itg_dw.log'
+    # Parse standard input piped from socat (and the remote router)
+    # and select measurement based on first word
+    read cmd opt
+    case $cmd in
+    send)
+        if [ ${opt:0:2} == "-H" ]; then
+            id=$(echo $opt | md5sum | cut -c 1-10)
+            echo "$id start $(date +%s) ($opt)" >> $logfile
+            ITGSend $opt 2>&1 | \
+                    awk '{ "date +%s" | getline date ; \
+                    print "'$id' " date " " $0 ; fflush() }' \
+                    >> $logfile &
+            pid=$(( $! - 1 ))  # TODO why is this - 1 ??
+            echo "$id pid $pid" >> $logfile
+        fi
+    ;;
+    log)
+        echo $cmd - $opt >> $logfile
+        ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 \
+                $opt.bitrate 2> /dev/null
+        echo bitrate
+        awk '(NR > 1){ print $3 }' $opt.bitrate
+        echo jitter
+        awk '(NR > 1){ print $3 }' $opt.jitter
+        echo pktloss
+        awk '(NR > 1){ print $3 }' $opt.pktloss
+        rm $opt $opt.*
+    ;;
+    *)
+        exit 2;
+        ;;
+    esac
+    ;;
+*)
+    echo "Usage: $0 [echopid]"
+    exit 1
+    ;;
 esac

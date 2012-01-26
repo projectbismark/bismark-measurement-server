@@ -1,16 +1,106 @@
 #!/bin/bash
-# Script to check/respawn measurement services
+#
+# bismark-mserver Start/stop the BISmark measurement server tools
+#
+# chkconfig:   - 99 1
+# description: BISmark measurement server, provides tools to source and sink \
+#              traffic for measurements to BISmark home router devices.
 
-# Load configuration
-. ~/etc/mserver.conf
+### BEGIN INIT INFO
+# Provides:
+# Required-Start: $local_fs $network $named crond
+# Required-Stop: $local_fs $network $named
+# Short-Description: BISmark measurement server.
+# Description: BISmark measurement server, provides tools to source and sink
+#              traffic for measurements to BISmark home router devices.
+### END INIT INFO
 
-# Check running services
-pgrep -f TCP-LISTEN:$RTR_PORT >/dev/null || ~/scripts/rtr
-pgrep -f TCP-LISTEN:$ITG_DW_PORT >/dev/null || ~/scripts/itg_dw
-sudo netstat -lntp | grep -q $ITG_UP_PORT.*ITGRecv || ~/scripts/itg_up
-sudo netstat -lntp | grep -q 55005.*probeserver || ( killall probeserver ; ~/bin/probeserver >> /tmp/spserver.log 2>&1 & )
-sudo netstat -lntp | grep -q 443.*netserver || ( sudo ~/bin/netserver -p 443 -4 >> /tmp/netserver_443.log 2>&1 & )
-sudo netstat -lntp | grep -q 12865.*netserver || ( ~/bin/netserver >> /tmp/netserver.log 2>&1 & )
+# Source function library.
+source /etc/rc.d/init.d/functions
 
-#stop
-sudo killall probeserver ITGRecv socat
+# Source config file for lockfile name
+source /etc/bismark-mserver.conf
+
+exec="/usr/bin/bismark-mserver-daemon"
+prog="bismark-mserver"
+config="/etc/bismark-mgmt.conf"
+
+start() {
+    [ -x $exec ] || exit 5
+    [ -f $config ] || exit 6
+    echo -n $"Starting $prog: "
+    touch $MSERVER_LOCKFILE
+    /usr/bin/bismark-mserver start
+    return 0
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    rm -f $MSERVER_LOCKFILE
+    /usr/bin/bismark-mserver stop
+    return 0
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    # run checks to determine if the service is running or use generic status
+    # status $prog
+
+    # poor man's status check based on lock file and knowledge of cron
+    if [ -f $MSERVER_LOCKFILE ]; then
+        echo "$prog is running."
+        return 0
+    else
+        echo "$prog is stopped."
+        return 3
+    fi
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?

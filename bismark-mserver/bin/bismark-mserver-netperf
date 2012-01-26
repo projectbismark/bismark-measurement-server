@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# bismark-mserver link capacity and traffic shaping (shaperprobe) measurements
+
+set -o nounset
+set -o errexit
+
+# Load configuration
+source /etc/bismark-mserver.conf
+
+netperf 2>&1 >> /tmp/bismark-mserver-probeserver.log &
+
+if [ ! -z ${1:-} ]; then
+    case "$1" in
+    echopid)
+        echo $!
+        ;;
+    *)
+        echo "Usage: $0 [echopid]"
+        exit 1
+        ;;
+    esac
+fi

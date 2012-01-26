@@ -2,13 +2,27 @@
 
 # bismark-mserver upstream bitrate, packet loss, jitter (D-ITG) measurements
 
+set -o nounset
+set -o errexit
+
 # Load configuration
 source /etc/bismark-mserver.conf
 
-if [ $ITG_UP_PORT -ge 1024 ]; then
-    ( ITGRecv -Sp $ITG_UP_PORT >> /tmp/itg.log 2>&1 & )
-else
+if [ "$ITG_UP_PORT" -lt 1024 ] && [ "$UID" -ne 0 ]; then
     echo "Sorry, $0 can't bind to ports < 1024. Terminating."
     exit 1
 fi
 
+ITGRecv -Sp "$ITG_UP_PORT" >> /tmp/bismark-mserver-itg_up.log 2>&1 &
+
+if [ ! -z ${1:-} ]; then
+    case "$1" in
+    echopid)
+        echo $!
+        ;;
+    *)
+        echo "Usage: $0 [echopid]"
+        exit 1
+        ;;
+    esac
+fi
