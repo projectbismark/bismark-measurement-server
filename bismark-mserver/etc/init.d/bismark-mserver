@@ -30,7 +30,7 @@ start() {
     [ -f $config ] || exit 6
     echo -n $"Starting $prog: "
     touch $MSERVER_LOCKFILE
-    /usr/bin/bismark-mserver start
+    /usr/bin/bismark-mserver run
     return 0
 }
 
