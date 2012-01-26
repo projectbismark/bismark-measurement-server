@@ -23,7 +23,7 @@ Sets up a BISmark measurement server capable of sourcing and sinking traffic
 for Project BISmark routers.
 
 %prep
-%setup -q
+%setup -q -n bismark-mserver
 
 %install
 %{__rm} -rf %{buildroot}
