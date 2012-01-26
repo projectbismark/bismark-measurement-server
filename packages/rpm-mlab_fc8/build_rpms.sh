@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -o nounset
-set -e errexit
+set -o errexit
 
 function prompt_yn()
 # $1 is prompt, $2 is default (Y|N)
@@ -111,11 +111,11 @@ for specdir in $(find $abspath -mindepth 1 -maxdepth 1 -type d)
 do
     pkg=$(basename $specdir)
     if [[ -e "$specdir/$pkg.spec" ]]; then
-        ln -s "$specdir/$pkg.spec" "$rpmbuild_specs"
+        ln -s -f "$specdir/$pkg.spec" "$rpmbuild_specs"
         for srcfile in $(find $specdir \
                 -mindepth 1 -maxdepth 1 ! -name $pkg.spec)
         do
-            cp -a "$srcfile" "$rpmbuild_sources"
+            cp -f -a "$srcfile" "$rpmbuild_sources"
         done
     fi
 done
