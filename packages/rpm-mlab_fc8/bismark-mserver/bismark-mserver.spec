@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.0
+Version: 0.1.1
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -16,6 +16,7 @@ Requires: ditg = 2.8.0
 Requires: shaperprobe-server
 Requires: socat
 Requires: curl
+Requires: binutils
 Requires(post): chkconfig
 Requires(preun): chkconfig, initscripts
 # Requires: monit  # save this for later release
@@ -59,6 +60,8 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Fri Jan 27 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.1-1
+- Minor changes due to further mlab testing.
 * Thu Jan 26 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.0-1
 - Updates to package after initial testing on m-lab.
 * Mon Jan 23 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.0.1-1

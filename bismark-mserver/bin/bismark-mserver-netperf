@@ -19,7 +19,7 @@ if [ ! -z ${1:-} ]; then
         do
             if [ $(strings "/proc/$pid/environ" | \
                    grep -c "NETSERVER_PARENT=$NETSERVER_PARENT") -gt 0 ]; then
-                    echo -n "$pid"
+                    echo "$pid"
                     break
             fi
         done
