@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.0.1
+Version: 0.1.0
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -59,6 +59,8 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Thu Jan 26 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.0-1
+- Updates to package after initial testing on m-lab.
 * Mon Jan 23 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.0.1-1
 - Initial packaging of bismark-mserver contents.
 
