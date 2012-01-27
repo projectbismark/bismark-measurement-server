@@ -33,14 +33,14 @@ lockfile="/var/lock/subsys/bismark-mserver"
 start() {
     [ -x $exec ] || exit 5
     [ -f $config ] || exit 6
-    echo -n "Starting $prog: "
+    echo "Starting $prog: "
     touch $MSERVER_LOCKFILE
     /usr/bin/bismark-mserver run
     return 0
 }
 
 stop() {
-    echo -n "Stopping $prog: "
+    echo "Stopping $prog: "
     rm -f $MSERVER_LOCKFILE
     /usr/bin/bismark-mserver stop
     return 0
