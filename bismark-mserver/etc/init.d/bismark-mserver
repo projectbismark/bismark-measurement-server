@@ -21,9 +21,9 @@
 # Source config file for lockfile name
 . /etc/bismark-mserver.conf
 
-exec="/usr/bin/bismark-mserver-daemon"
+exec="/usr/bin/bismark-mserver"
 prog="bismark-mserver"
-config="/etc/bismark-mgmt.conf"
+config="/etc/bismark-mserver.conf"
 
 # keep rpmlint happy
 lockfile="/var/lock/subsys/bismark-mserver"

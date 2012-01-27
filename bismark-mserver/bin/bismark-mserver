@@ -8,13 +8,21 @@ set -o errexit
 # Load configuration
 . /etc/bismark-mserver.conf
 
+INITD_FILE='/etc/rc.d/init.d/bismark-mserver'
+
 daemons="bismark-mserver-rtraceroute \
          bismark-mserver-itg_dw \
          bismark-mserver-itg_up \
          bismark-mserver-shaperprobe \
          bismark-mserver-netperf"
 
-case "$1" in
+if [ ! -z ${1:-} ]; then
+    cmd="$1"
+else
+    cmd="help"
+fi
+
+case "$cmd" in
 run)
     # only proceed if actually started via initscript
     if [ ! -f $MSERVER_LOCKFILE ]; then
@@ -31,7 +39,7 @@ run)
             pid=$(cat $pidfile)
             procdir="/proc/$pid"
             if [ ! -e $procdir -a -d $procdir ]; then
-                pkill -TERM -P "$pid"  # kill any orphan children
+                pkill -TERM -P "$pid" || true  # kill any orphan children
                 $daemon echopid > $pidfile
             fi
         fi
@@ -52,9 +60,9 @@ stop)
             pid=$(cat $pidfile)
             procdir="/proc/$pid"
             if [ -e $procdir -a -d $procdir ]; then
-                kill -TERM "$pid"      # kill parent
+                kill -TERM "$pid" || true      # kill parent
             fi
-            pkill -TERM -P "$pid"      # kill any orphan children
+            pkill -TERM -P "$pid" || true      # kill any orphan children
             rm -f $pidfile
         fi
     done

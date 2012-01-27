@@ -22,7 +22,7 @@ global_ip=$(/sbin/ip addr show dev "$default_if" |
             awk -F ' ' '{print $2}')
 hostname=$(hostname)
 pkg_version=$(rpm --query bismark-mserver \
-                  --queryformat %{VERSION}-%{RELEASE} 2>&1 > /dev/null \
+                  --queryformat %{VERSION}-%{RELEASE} > /dev/null 2>&1 \
               || echo 'N/A')
 
 echo "{

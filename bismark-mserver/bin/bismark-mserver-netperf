@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# bismark-mserver link capacity and traffic shaping (shaperprobe) measurements
+# bismark-mserver TCP and UDP throughput (netperf) measurements
 
 set -o nounset
 set -o errexit
@@ -8,12 +8,21 @@ set -o errexit
 # Load configuration
 . /etc/bismark-mserver.conf
 
-netperf 2>&1 >> /tmp/bismark-mserver-probeserver.log &
+export NETSERVER_PARENT="BISMARK_$$"
+netserver >> /tmp/bismark-mserver-netperf.log 2>&1 &
 
 if [ ! -z ${1:-} ]; then
     case "$1" in
     echopid)
-        echo $!
+        pids=$(ps -ef | awk '$8=="netserver" { print $2 }')
+        for pid in $pids
+        do
+            if [ $(strings "/proc/$pid/environ" | \
+                   grep -c "NETSERVER_PARENT=$NETSERVER_PARENT") -gt 0 ]; then
+                    echo -n "$pid"
+                    break
+            fi
+        done
         ;;
     *)
         echo "Usage: $0 [echopid]"
