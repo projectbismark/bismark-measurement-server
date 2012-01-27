@@ -164,3 +164,10 @@ createrepo -o "$webdir/source/SRPMS" -v -d "$webdir/source/SRPMS"
 
 # export GPG key
 gpg --export --armor > "$webdir/RPM-GPG-KEY-bismark"
+
+if prompt_yn "Upload repository to beachmont?" "Y"; then
+    ssh woodrow@beachmont.noise.gatech.edu \
+        rm -rf ~/bismark-mserver/mlab_fedora/*
+    scp -r "$webdir" \
+        woodrow@beachmont.noise.gatech.edu:~/bismark-mserver/mlab_fedora/
+fi
