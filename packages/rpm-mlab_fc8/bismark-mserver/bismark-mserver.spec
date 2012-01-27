@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.1
+Version: 0.1.2
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -46,8 +46,8 @@ cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 %defattr(-, root, root, 0755)
 %doc LICENSE README
 %{_bindir}/bismark-mserver*
-%config(noreplace) %{_sysconfdir}/bismark-mserver.conf
-%config(noreplace) %{_sysconfdir}/cron.d/bismark-mserver
+%config %{_sysconfdir}/bismark-mserver.conf
+%config %{_sysconfdir}/cron.d/bismark-mserver
 %{_initrddir}/bismark-mserver
 
 %post
@@ -60,8 +60,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
-* Fri Jan 27 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.1-1
+* Fri Jan 27 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.2-1
 - Minor changes due to further mlab testing.
+- Remove (noreplace) from config entries
 * Thu Jan 26 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.0-1
 - Updates to package after initial testing on m-lab.
 * Mon Jan 23 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.0.1-1
