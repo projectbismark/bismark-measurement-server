@@ -37,9 +37,9 @@ exec)
     # Parse standard input piped from socat (and the remote router)
     # and select measurement based on first word
     read cmd firstarg nextargs
-    opt="$firstarg $nextargs"
     case $cmd in
     send)
+        opt="$firstarg $nextargs"
         if [ "$firstarg" = "-H" ]; then
             id=$(echo $opt | md5sum | cut -c 1-10)
             echo "$id start $(date +%s) ($opt)" >> $logfile
@@ -52,6 +52,7 @@ exec)
         fi
     ;;
     log)
+        opt=$firstarg
         echo $cmd - $opt >> $logfile
         ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 \
                 $opt.bitrate 2> /dev/null
