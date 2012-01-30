@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.2
+Version: 0.1.3
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -60,6 +60,8 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Sun Jan 29 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.3-1
+- Fixes to itg_dw and heartbeat.
 * Fri Jan 27 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.2-1
 - Minor changes due to further mlab testing.
 - Remove (noreplace) from config entries
