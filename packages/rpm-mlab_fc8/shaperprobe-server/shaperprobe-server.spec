@@ -2,9 +2,9 @@
 # Authority: dag
 # Upstream: Partha Kanuparthy <partha@cc.gatech.edu>
 
-Summary: Server for network capacity and traffic shaping measurement tool 
+Summary: Server for network capacity and traffic shaping measurement tool
 Name: shaperprobe-server
-Version: 0.1 
+Version: 0.1
 Release: 1bismark1%{?dist}
 License: GPLv2+
 Group: Applications/Internet

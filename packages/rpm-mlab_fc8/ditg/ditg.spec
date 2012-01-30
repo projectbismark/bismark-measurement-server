@@ -17,7 +17,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 %description
 D-ITG (Distributed Internet Traffic Generator) is a platform capable to produce
 traffic at packet level accurately replicating appropriate stochastic processes
-for both IDT (Inter Departure Time) and PS (Packet Size) random variables 
+for both IDT (Inter Departure Time) and PS (Packet Size) random variables
 
 %prep
 %setup -q -n D-ITG-2.8.0-rc1

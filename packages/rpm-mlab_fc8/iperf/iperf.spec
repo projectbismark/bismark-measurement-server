@@ -11,7 +11,7 @@ Summary: Tool for measuring TCP and UDP bandwidth performance
 Name: iperf
 Version: 2.0.4
 Release: 1bismark1%{?dist}
-License: BSD 
+License: BSD
 Group: Applications/Internet
 #URL: http://dast.nlanr.net/Projects/Iperf/
 URL: http://iperf.sourceforge.net/
@@ -49,7 +49,7 @@ delay jitter, datagram loss.
 
 %changelog
 * Wed Jan 18 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.0.4-1bismark1
-- Updated sourceforge URL, license, and doc entry 
+- Updated sourceforge URL, license, and doc entry
 
 * Mon Apr 28 2008 Dag Wieers <dag@wieers.com> - 2.0.4-1
 - Updated to release 2.0.4.
