@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
 Version: 0.1.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: http://redmine.noise.gatech.edu/projects/bismark-mserver
@@ -10,11 +10,11 @@ Source: bismark-mserver.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildArch: noarch
-Requires: netperf = 2.4.5
-Requires: iperf >= 2.0.4
-Requires: ditg = 2.8.0
-Requires: shaperprobe-server
-Requires: socat
+Requires: netperf = 2.4.5-1bismark1
+Requires: iperf = 2.0.4-1bismark1
+Requires: ditg = 2.8.0-0bismark1.rc1
+Requires: shaperprobe-server = 0.1.1-1bismark1
+Requires: socat = 1.7.1.3-1bismark1
 Requires: curl
 Requires: binutils
 Requires(post): chkconfig
@@ -60,6 +60,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Mon Jan 30 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.3-2
+- Add socat dependency and make other requirements tight to bismark-mserver
+  package versions.
 * Sun Jan 29 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.3-1
 - Fixes to itg_dw and heartbeat.
 * Fri Jan 27 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.2-1
