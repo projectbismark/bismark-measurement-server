@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.3
-Release: 4%{?dist}
+Version: 0.1.4
+Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: http://redmine.noise.gatech.edu/projects/bismark-mserver
@@ -44,7 +44,7 @@ cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 
 %files
 %defattr(-, root, root, 0755)
-%doc LICENSE README
+%doc LICENSE README INSTALL.md
 %{_bindir}/bismark-mserver*
 %config %{_sysconfdir}/bismark-mserver.conf
 %config %{_sysconfdir}/cron.d/bismark-mserver
@@ -60,6 +60,10 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Tue Jan 31 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.4-1
+- Start running mserver daemon processes as an unprivileged user.
+- Update config variables and fix error in use of socat timeout variable.
+- Increase heartbeat frequency.
 * Mon Jan 30 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.3-2
 - Add socat dependency and make other requirements tight to bismark-mserver
   package versions.
