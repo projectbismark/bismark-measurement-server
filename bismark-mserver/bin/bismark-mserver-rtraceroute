@@ -39,13 +39,13 @@ exec)
     read type rest
     case $type in
     ICMP)
-        sudo traceroute -n -q1 -I $SOCAT_PEERADDR
+        sudo traceroute -n -q 1 -I $SOCAT_PEERADDR
         ;;
     UDP)
-        traceroute -n -q1 $SOCAT_PEERADDR
+        traceroute -n -q 1 $SOCAT_PEERADDR
         ;;
     TCP)
-        sudo traceroute -n -q1 -T $SOCAT_PEERADDR
+        sudo traceroute -n -q 1 -T $SOCAT_PEERADDR
         ;;
     *)
         exit 2
