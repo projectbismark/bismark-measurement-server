@@ -18,7 +18,7 @@
 Summary: Network tool for managing many disparate systems
 Name: puppet
 Version: 2.7.9
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Apache License 2.0
 Group: System Environment/Base
 URL: http://puppetlabs.com/projects/puppet/
@@ -38,14 +38,14 @@ Requires: ruby(abi) = 1.8
 Requires: ruby-shadow
 %endif
 
-# Pull in ruby selinux bindings where available
-%if 0%{?fedora} || 0%{?rhel} >= 6
-%{!?_without_selinux:Requires: ruby(selinux), libselinux-utils}
-%else
-%if 0%{?rhel} && 0%{?rhel} == 5
-%{!?_without_selinux:Requires: libselinux-ruby, libselinux-utils}
-%endif
-%endif
+## Pull in ruby selinux bindings where available
+#%if 0%{?fedora} || 0%{?rhel} >= 6
+#%{!?_without_selinux:Requires: ruby(selinux), libselinux-utils}
+#%else
+#%if 0%{?rhel} && 0%{?rhel} == 5
+#%{!?_without_selinux:Requires: libselinux-ruby, libselinux-utils}
+#%endif
+#%endif
 
 Requires: facter >= 1.5
 Requires: ruby >= 1.8.1
@@ -287,6 +287,9 @@ fi
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Mon Jan 30 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.7.9-2
+- Package for bismark-mserver, removing selinux requirements.
+
 * Thu Jan 12 2012 Yury V. Zaytsev <yury@shurup.com> - 2.7.9-1
 - Updated to release 2.7.9.
 
