@@ -68,12 +68,13 @@
     $ sudo /etc/init.d/crond start
     $ sudo /etc/init.d/bismark-mserver start
     ```
+
 ## RPM-GPG-KEY-bismark
 
 The fingerprint of the GPG key used to sign these packages and the repo
 metadata is:
 
-```
+```sh
 $ gpg --fingerprint 16A7D193
 pub   1024D/16A7D193 2012-01-25
       Key fingerprint = 7AA7 9826 A36D AC88 2455  6E4B 4D6A E2C2 16A7 D193
