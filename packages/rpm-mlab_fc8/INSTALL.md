@@ -55,14 +55,40 @@
     Answer 'y' if yum asks you about importing RPM-GPG-KEY-bismark. The key's
     fingerprint is shown below in the _RPM-GPG-KEY-bismark_ section.
 
-5. Set up bismark-mserver and crond to start on startup:
+5. Create an unprivileged user to run the bismark-mserver daemons:
+
+    ```sh
+    $ /usr/sbin/useradd gt_bismark_unpriv
+    $ /usr/sbin/usermod -L gt_bismark_unpriv
+    ```
+
+    The username must match the `MSERVER_UNPRIV_USER` variable, so either
+    create a user with the default username `gt_bismark_unpriv`, or create a
+    user named as you like and change the value of `MSERVER_UNPRIV_USER` in
+    `/etc/bismark-mserver.conf` accordingly.
+
+6. Enable the unprivileged user to perform ICMP and TCP traceroutes by
+   appending the following to your sudoers file with `sudo /usr/bin/visudo`:
+
+    ```
+    ## Traceroutes requiring root, used by bismark-mserver
+    Cmnd_Alias BISMARK_TRACEROUTE = \
+            /bin/traceroute -n -q 1 -T [0-9]*.[0-9]*.[0-9]*.[0-9]*, \
+            /bin/traceroute -n -q 1 -I [0-9]*.[0-9]*.[0-9]*.[0-9]*
+    gt_bismark_unpriv ALL = NOPASSWD: BISMARK_TRACEROUTE
+    ```
+
+    Note that if you picked a username other that `gt_bismark_unpriv` in step
+    5, you must use the same username here.
+
+7. Set up bismark-mserver and crond to start on startup:
 
     ```sh
     $ sudo /sbin/chkconfig --level 2345 crond on
     $ sudo /sbin/chkconfig --level 2345 bismark-mserver on
     ```
 
-6. Start bismark-mserver and crond:
+8. Start bismark-mserver and crond:
 
     ```sh
     $ sudo /etc/init.d/crond start
