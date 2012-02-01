@@ -58,8 +58,8 @@
 5. Create an unprivileged user to run the bismark-mserver daemons:
 
     ```sh
-    $ /usr/sbin/useradd gt_bismark_unpriv
-    $ /usr/sbin/usermod -L gt_bismark_unpriv
+    $ sudo /usr/sbin/useradd gt_bismark_unpriv
+    $ sudo /usr/sbin/usermod -L gt_bismark_unpriv
     ```
 
     The username must match the `MSERVER_UNPRIV_USER` variable, so either
