@@ -3,7 +3,7 @@
 1. Add bismark-mserver.repo to /etc/yum.repos.d/:
 
     ```sh
-    $ cat << "EOF" | sudo tee /etc/yum.repos.d/bismark-mserver.repo
+    $ cat << "EOF" | sudo tee /etc/yum.repos.d/bismark-mserver.repo > /dev/null
     [bismark-mserver]
     name=Bismark Measurment Server Fedora $releasever - $basearch
     baseurl=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/fc$releasever/$basearch/
