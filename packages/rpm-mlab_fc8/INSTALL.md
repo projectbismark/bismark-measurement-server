@@ -37,6 +37,9 @@
     $ sudo yum check-update
     ```
 
+    Answer 'y' if yum asks you about importing RPM-GPG-KEY-bismark. The key's
+    fingerprint is shown below in the _RPM-GPG-KEY-bismark_ section.
+
 3. Update any other packages:
 
     ```sh
@@ -49,10 +52,8 @@
     $ sudo yum install bismark-mserver
     ```
 
-    Answer 'y' when yum asks you about importing RPM-GPG-KEY-bismark. The
-    key's fingerprint is currently
-    `7AA7 9826 A36D AC88 2455  6E4B 4D6A E2C2 16A7 D193`, 
-    or `16A7D193` for short.
+    Answer 'y' if yum asks you about importing RPM-GPG-KEY-bismark. The key's
+    fingerprint is shown below in the _RPM-GPG-KEY-bismark_ section.
 
 5. Set up bismark-mserver and crond to start on startup:
 
@@ -67,4 +68,14 @@
     $ sudo /etc/init.d/crond start
     $ sudo /etc/init.d/bismark-mserver start
     ```
+## RPM-GPG-KEY-bismark
 
+The fingerprint of the GPG key used to sign these packages and the repo
+metadata is:
+
+```
+$ gpg --fingerprint 16A7D193
+pub   1024D/16A7D193 2012-01-25
+      Key fingerprint = 7AA7 9826 A36D AC88 2455  6E4B 4D6A E2C2 16A7 D193
+uid                  BISmark Developer <bismark-admin@projectbismark.net>
+```
