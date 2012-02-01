@@ -10,7 +10,7 @@
     enabled=1
     gpgcheck=1
     repo_gpgcheck=1
-    gpgkey=http://beachmont.noise.gatech.edu/bismark-mserver/mlab_fedora/fc$releasever/RPM-GPG-KEY-bismark
+    gpgkey=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/fc$releasever/RPM-GPG-KEY-bismark
 
     [bismark-mserver-debuginfo]
     name=Bismark Measurment Server Fedora $releasever - $basearch - Debug
@@ -18,7 +18,7 @@
     enabled=0
     gpgcheck=1
     repo_gpgcheck=1
-    gpgkey=http://beachmont.noise.gatech.edu/bismark-mserver/mlab_fedora/fc$releasever/RPM-GPG-KEY-bismark
+    gpgkey=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/fc$releasever/RPM-GPG-KEY-bismark
 
     [bismark-mserver-source]
     name=Bismark Measurment Server Fedora $releasever - Source
@@ -26,7 +26,7 @@
     enabled=0
     gpgcheck=1
     repo_gpgcheck=1
-    gpgkey=http://beachmont.noise.gatech.edu/bismark-mserver/mlab_fedora/fc$releasever/RPM-GPG-KEY-bismark
+    gpgkey=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/fc$releasever/RPM-GPG-KEY-bismark
     EOF
     ```
 
