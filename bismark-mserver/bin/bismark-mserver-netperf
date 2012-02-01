@@ -9,7 +9,7 @@ set -o errexit
 . /etc/bismark-mserver.conf
 
 export NETSERVER_PARENT="BISMARK_$$"
-netserver >> /tmp/bismark-mserver-netperf.log 2>&1 &
+netserver -4 -p $NETPERF_PORT >> /tmp/bismark-mserver-netperf.log 2>&1 &
 
 if [ ! -z ${1:-} ]; then
     case "$1" in

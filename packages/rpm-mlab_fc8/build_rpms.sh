@@ -150,17 +150,20 @@ find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 ! -name '*-debuginfo-*' \
         -exec cp '{}' "$webdir/i386/" \;
 cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/"
 createrepo -o "$webdir/i386" -v -d "$webdir/i386"
+gpg -a --detach-sign "$webdir/i386/repodata/repomd.xml"
 
 # copy debuginfo RPMs & make repodata
 mkdir -p "$webdir/i386/debug"
 find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 -name '*-debuginfo-*' \
         -exec cp '{}' "$webdir/i386/debug/" \;
 createrepo -o "$webdir/i386/debug" -v -d "$webdir/i386/debug"
+gpg -a --detach-sign "$webdir/i386/debug/repodata/repomd.xml"
 
 # copy SRPMs & make repodata
 mkdir -p "$webdir/source/SRPMS"
 cp -a "$rpmbuild_srpms"/*.src.rpm "$webdir/source/SRPMS/"
 createrepo -o "$webdir/source/SRPMS" -v -d "$webdir/source/SRPMS"
+gpg -a --detach-sign "$webdir/source/SRPMS/repodata/repomd.xml"
 
 # export GPG key
 gpg --export --armor > "$webdir/RPM-GPG-KEY-bismark"

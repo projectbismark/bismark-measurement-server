@@ -22,6 +22,11 @@ else
     cmd="help"
 fi
 
+if [ "$(id -ru)" -ne 0 ]; then
+    echo "Sorry, you must be root."
+    exit 1
+fi
+
 case "$cmd" in
 run)
     # only proceed if actually started via initscript
@@ -32,16 +37,21 @@ run)
 
     for daemon in $daemons
     do
+        daemon_running=false
         pidfile="/var/run/$daemon.pid"
-        if [ ! -e $pidfile ]; then
-            $daemon echopid > $pidfile
-        else
+        if [ -e $pidfile ]; then
             pid=$(cat $pidfile)
             procdir="/proc/$pid"
-            if [ ! -e $procdir -a -d $procdir ]; then
+            if [ -e $procdir -a -d $procdir ]; then
+                daemon_running=true
+            else
                 pkill -TERM -P "$pid" || true  # kill any orphan children
-                $daemon echopid > $pidfile
             fi
+        fi
+        if ! $daemon_running; then
+            daemon_pid=$(su - $MSERVER_UNPRIV_USER -c "$daemon echopid")
+            echo "$daemon_pid"
+            echo "$daemon_pid" > $pidfile
         fi
     done
     ;;

@@ -1,3 +1,3 @@
 # m  h  dom mon dow   user command
 */5  *  *   *   *     root bismark-mserver run > /dev/null 2>&1 &
-*/10 *  *   *   *     root bismark-mserver-heartbeat > /dev/null 2>&1 &
+*/2  *  *   *   *     root bismark-mserver-heartbeat > /dev/null 2>&1 &

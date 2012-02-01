@@ -16,7 +16,7 @@ start_socat()
         exit 1
     fi
 
-    socat -T INACTIVITY_TIMEOUT TCP-LISTEN:$1,fork,reuseaddr \
+    socat -4 -T $SOCAT_CHILD_TIMEOUT TCP-LISTEN:$1,fork,reuseaddr \
             EXEC:"$0 exec",pipes > /dev/null 2>&1 &
     if [ "$2" = 'echopid' ]; then
         echo $!
