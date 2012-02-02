@@ -43,7 +43,7 @@ exec)
         if [ "$firstarg" = "-H" ]; then
             id=$(echo $opt | md5sum | cut -c 1-10)
             echo "$id start $(date +%s) ($opt)" >> $logfile
-            ITGSend $opt 2>&1 | \
+            ITGSend $opt -a $SOCAT_PEERADDR 2>&1 | \
                     awk '{ "date +%s" | getline date ; \
                     print "'$id' " date " " $0 ; fflush() }' \
                     >> $logfile &
