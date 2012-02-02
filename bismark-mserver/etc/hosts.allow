@@ -1,0 +1,4 @@
+## START_BISMARK-MSERVER_AUTOMATICALLY_GENERATED_HOSTS_ALLOW
+# default, allow univers.noise.gatech.edu (requires DNS & PTR record)
+ALL : univers.noise.gatech.edu
+## END_BISMARK-MSERVER_AUTOMATICALLY_GENERATED_HOSTS_ALLOW
