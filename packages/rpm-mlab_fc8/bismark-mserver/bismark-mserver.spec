@@ -10,16 +10,29 @@ Source: bismark-mserver.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildArch: noarch
+
+# bismark-packaged dependencies
 Requires: netperf = 2.4.5-1bismark1.fc8
 Requires: iperf = 2.0.4-1bismark1.fc8
 Requires: ditg = 2.8.0-0bismark1.rc1.fc8
 Requires: shaperprobe-server = 0.1-1bismark1.fc8
 Requires: socat = 1.7.1.3-1bismark1.fc8
+# fedora-packaged dependencies
+Requires: traceroute
+Requires: iputils
 Requires: curl
 Requires: binutils
+Requires: iproute
+Requires: net-tools
+Requires: rpm
+Requires: grep
+Requires: coreutils
+Requires: gawk
+Requires: sudo
+# Requires: monit  # save this for later release
+
 Requires(post): chkconfig
 Requires(preun): chkconfig, initscripts
-# Requires: monit  # save this for later release
 
 %description
 Sets up a BISmark measurement server capable of sourcing and sinking traffic
