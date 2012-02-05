@@ -1,7 +1,7 @@
-diff --git a/mserver/src/spserver/measflow.c b/mserver/src/spserver/measflow.c
+diff --git a/spserver/measflow.c b/spserver/measflow.c
 index 8223e60..863f1b7 100644
---- a/mserver/src/spserver/measflow.c
-+++ b/mserver/src/spserver/measflow.c
+--- a/spserver/measflow.c
++++ b/spserver/measflow.c
 @@ -174,7 +174,7 @@ int mflowReceiver(int tcpsock, int udpsock, double *recvrate, FILE *fp)
  	double sendtstamp = 0;
  	int ULSZ = sizeof(unsigned long);
@@ -20,10 +20,10 @@ index 8223e60..863f1b7 100644
  		}
  
  		nrecvd++;
-diff --git a/mserver/src/spserver/probeserver.c b/mserver/src/spserver/probeserver.c
+diff --git a/spserver/probeserver.c b/spserver/probeserver.c
 index 8b58b0d..94fb9d3 100644
---- a/mserver/src/spserver/probeserver.c
-+++ b/mserver/src/spserver/probeserver.c
+--- a/spserver/probeserver.c
++++ b/spserver/probeserver.c
 @@ -258,7 +258,7 @@ int main(int argc, char *argv[], char **env)
  	char tracefile[256], filename[256];
  	struct timeval tv;
@@ -87,10 +87,10 @@ index 8b58b0d..94fb9d3 100644
  
  	return(0);
  }
-diff --git a/mserver/src/spserver/tbdetect.c b/mserver/src/spserver/tbdetect.c
+diff --git a/spserver/tbdetect.c b/spserver/tbdetect.c
 index 803dcea..20cc625 100644
---- a/mserver/src/spserver/tbdetect.c
-+++ b/mserver/src/spserver/tbdetect.c
+--- a/spserver/tbdetect.c
++++ b/spserver/tbdetect.c
 @@ -177,7 +177,7 @@ int tbdetectSender(int tcpsock, int udpsock, struct sockaddr_in *from,
  		if(bwperiod > bp) {bwperiod = bp; trainlength = c;}
  	}
@@ -175,10 +175,10 @@ index 803dcea..20cc625 100644
 +	//fprintf(fp, "Shaping rate: %d Kbps.\n", (int)tbrate);
  }
  
-diff --git a/mserver/src/spserver/tcpserver.c b/mserver/src/spserver/tcpserver.c
+diff --git a/spserver/tcpserver.c b/spserver/tcpserver.c
 index d863a2f..31e4c0c 100644
---- a/mserver/src/spserver/tcpserver.c
-+++ b/mserver/src/spserver/tcpserver.c
+--- a/spserver/tcpserver.c
++++ b/spserver/tcpserver.c
 @@ -460,7 +460,7 @@ double capacityEstimation(int tcpsock, int udpsock0, struct sockaddr_in *from, F
  			}
  		}
