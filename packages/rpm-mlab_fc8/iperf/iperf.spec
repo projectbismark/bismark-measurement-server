@@ -10,7 +10,7 @@
 Summary: Tool for measuring TCP and UDP bandwidth performance
 Name: iperf
 Version: 2.0.4
-Release: 1bismark1%{?dist}
+Release: 1bismark2%{?dist}
 License: BSD
 Group: Applications/Internet
 #URL: http://dast.nlanr.net/Projects/Iperf/
@@ -19,9 +19,10 @@ URL: http://iperf.sourceforge.net/
 #Source: http://dast.nlanr.net/Projects/Iperf2.0/iperf-%{version}.tar.gz
 #Source: http://dl.sf.net/iperf/iperf-%{version}.tar.gz
 Source: http://downloads.sourceforge.net/project/iperf/iperf/%{version}%20source/iperf-%{version}.tar.gz
+Patch0: iperf-2.0.4-tcp_wrappers.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-BuildRequires: gcc-c++, libstdc++-devel
+BuildRequires: gcc-c++, libstdc++-devel, tcp_wrappers-devel
 
 %description
 Iperf is a tool to measure maximum TCP bandwidth, allowing the tuning
@@ -30,9 +31,10 @@ delay jitter, datagram loss.
 
 %prep
 %setup -q
+%patch0 -p2
 
 %build
-%configure
+%configure CFLAGS="-lwrap $CFLAGS"
 %{__make} %{?_smp_mflags}
 
 %install
@@ -48,6 +50,9 @@ delay jitter, datagram loss.
 %{_bindir}/iperf
 
 %changelog
+* Sun Feb 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.0.4-1bismark2
+- Patch to use tcp_wrappers/libwrap for server access control.
+
 * Wed Jan 18 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.0.4-1bismark1
 - Updated sourceforge URL, license, and doc entry
 
