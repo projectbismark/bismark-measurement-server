@@ -12,5 +12,6 @@ $VENV_CMD --no-site-packages --distribute $VENV_DIR
 source $VENV_DIR/bin/activate
 $PIP_CMD -E $VENV_DIR install psycopg2
 $PIP_CMD -E $VENV_DIR install bottle
+$PIP_CMD -E $VENV_DIR install bottle_sqlite
 $PIP_CMD -E $VENV_DIR install werkzeug
 $PIP_CMD -E $VENV_DIR install bottle-werkzeug
