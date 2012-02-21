@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.5
+Version: 0.1.6
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -49,8 +49,8 @@ mkdir -p %{buildroot}%{_bindir}
 cp -p bin/bismark-mserver* %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sysconfdir}
 cp -p etc/bismark-mserver.conf %{buildroot}%{_sysconfdir}
-cp -p etc/hosts.allow.base %{buildroot}%{_sysconfdir}
-cp -p etc/hosts.deny %{buildroot}%{_sysconfdir}
+cp -p etc/hosts.allow.bismark %{buildroot}%{_sysconfdir}
+cp -p etc/hosts.deny.bismark %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}%{_sysconfdir}/cron.d
 cp -p etc/cron.d/bismark-mserver %{buildroot}%{_sysconfdir}/cron.d
 mkdir -p %{buildroot}%{_initrddir}  # %{_initrddir} is deprecated as of fc10
@@ -64,8 +64,8 @@ cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 %doc LICENSE README INSTALL.md
 %{_bindir}/bismark-mserver*
 %config %{_sysconfdir}/bismark-mserver.conf
-%config %{_sysconfdir}/hosts.allow.base
-%config %{_sysconfdir}/hosts.deny
+%config %{_sysconfdir}/hosts.allow.bismark
+%config %{_sysconfdir}/hosts.deny.bismark
 %config %{_sysconfdir}/cron.d/bismark-mserver
 %{_initrddir}/bismark-mserver
 
@@ -79,9 +79,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
-* Mon Feb 20 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.5-1
+* Mon Feb 20 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.6-1
 - Add bismark-mserver-hostsallow to download and construct a hosts.allow file.
-- Include default hosts.allow.base and hosts.deny files.
+- Include default hosts.allow.bismark and hosts.deny.bismark files.
 * Tue Jan 31 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.4-1
 - Start running mserver daemon processes as an unprivileged user.
 - Update config variables and fix error in use of socat timeout variable.
