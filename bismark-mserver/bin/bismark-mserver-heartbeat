@@ -20,7 +20,7 @@ default_if=$(/sbin/ip route | grep default | head -n 1 | \
 global_ip=$(/sbin/ip addr show dev "$default_if" |
             grep -oP '^\s+inet\s(\d+\.){3}\d+' | head -n 1 | \
             awk -F ' ' '{print $2}')
-hostname=$(hostname)
+hostname="bismark.gt.$(hostname)"
 pkg_version=$(rpm --query bismark-mserver \
                   --queryformat %{VERSION}-%{RELEASE} 2> /dev/null \
               || echo 'N/A')
@@ -30,7 +30,7 @@ echo "{
       \"bismark-mserver_version\": \"$pkg_version\"
       }" > $heartbeat_msg
 
-curl --request PUT \
+curl --request POST \
      --upload-file $heartbeat_msg \
      --header 'Content-Type: application/json' \
      -4 -s "$HEARTBEAT_SERVER:$HEARTBEAT_PORT/mservers/$hostname"

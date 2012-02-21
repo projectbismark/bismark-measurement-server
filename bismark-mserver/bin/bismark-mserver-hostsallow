@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Download list of allowed hosts and construct hosts.allow file
+
+set -o nounset
+set -o errexit
+
+# Load configuration
+. /etc/bismark-mserver.conf
+
+if [ "$(id -ru)" -ne 0 ]; then
+    echo "Sorry, you must be root."
+    exit 1
+fi
+
+# only proceed if actually started via initscript
+if [ ! -f $MSERVER_LOCKFILE ]; then
+    exit 0
+fi
+
+hostname="bismark.gt.$(hostname)"
+
+# download JSON representation of hosts.allow from mserver-mgmt
+touch /tmp/hosts.allow.json
+chmod 644 /tmp/hosts.allow.json
+curl --header 'Accept: application/json' -4 -s \
+    "$HEARTBEAT_SERVER:$HEARTBEAT_PORT/mservers/$hostname/hosts.allow" \
+    > /tmp/hosts.allow.json
+
+# include any base entries, and generate the hosts.allow from the JSON
+touch /tmp/hosts.allow
+chmod 644 /tmp/hosts.allow
+if [ -f /etc/hosts.allow.base ]; then
+    cat /etc/hosts.allow.base > /tmp/hosts.allow
+fi
+python /usr/bin/bismark-mserver-hostsallow-parse.py /tmp/hosts.allow.json \
+    >> /tmp/hosts.allow
+
+# move file into place if all signs point to success
+if [ -f /tmp/hosts.allow ] && $(tail -n 1 /tmp/hosts.allow | grep -q '^# done')
+then
+    mv /tmp/hosts.allow /etc/hosts.allow
+    rm /tmp/hosts.allow.json
+fi
