@@ -12,11 +12,11 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildArch: noarch
 
 # bismark-packaged dependencies
-Requires: netperf = 2.4.5-1bismark1.fc8
-Requires: iperf = 2.0.4-1bismark1.fc8
-Requires: ditg = 2.8.0-0bismark1.rc1.fc8
-Requires: shaperprobe-server = 0.1-1bismark1.fc8
-Requires: socat = 1.7.1.3-1bismark1.fc8
+Requires: netperf = 2.4.5-1bismark3.fc8
+Requires: iperf = 2.0.4-1bismark2.fc8
+Requires: ditg = 2.8.0-0bismark2.rc1.fc8
+Requires: shaperprobe-server = 0.1-1bismark3.fc8
+Requires: socat = 1.7.1.3-1bismark2.fc8
 # fedora-packaged dependencies
 Requires: traceroute
 Requires: iputils
