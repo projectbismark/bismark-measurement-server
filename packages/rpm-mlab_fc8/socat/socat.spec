@@ -9,7 +9,7 @@
 Summary: Relay for bidirectional data transfer between 2 channels
 Name: socat
 Version: 1.7.1.3
-Release: 1bismark1%{?dist}
+Release: 1bismark2%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: http://www.dest-unreach.org/socat/
@@ -20,7 +20,7 @@ Vendor: Dag Apt Repository, http://dag.wieers.com/apt/
 Source: http://www.dest-unreach.org/socat/download/socat-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-BuildRequires: readline-devel, openssl-devel
+BuildRequires: readline-devel, openssl-devel, tcp_wrappers-devel
 Requires: tcp_wrappers
 
 %description
@@ -54,6 +54,9 @@ line editor, a program, or a combination of two of these.
 %{_bindir}/socat
 
 %changelog
+* Thu Feb 02 2012 Stephen Woodrow <woodrow@gatech.edu> - 1.7.1.3-1bismark2
+- Add tcp_wrappers headers to BuildRequires.
+
 * Mon Jan 30 2012 Stephen Woodrow <woodrow@gatech.edu> - 1.7.1.3-1bismark1
 - Include in bismark-mserver.
 

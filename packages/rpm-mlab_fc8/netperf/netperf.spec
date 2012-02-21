@@ -10,24 +10,27 @@
 Summary: Performance testing tool for TCP/UDP
 Name: netperf
 Version: 2.4.5
-Release: 1bismark1%{?dist}
+Release: 1bismark3%{?dist}
 License: BSD
 Group: Applications/Internet
 URL: http://www.netperf.org/netperf/NetperfPage.html
 
 #Source: ftp://ftp.netperf.org/netperf/netperf-%{version}.tar.gz
 Source: ftp://ftp.netperf.org/netperf/archive/netperf-%{version}.tar.gz
+Patch0: netperf-2.4.5-tcp_wrappers.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRequires: tcp_wrappers-devel
 
 %description
 Netperf is a tool to measure TCP/UDP performance.
 
 %prep
 %setup -q
+%patch0 -p2
 
 %build
 %configure \
-    --program-prefix="%{?_program_prefix}"
+    --program-prefix="%{?_program_prefix}" LIBS="-lwrap $LIBS"
 %{__make} %{_smp_mflags}
 
 %install
@@ -49,6 +52,12 @@ Netperf is a tool to measure TCP/UDP performance.
 %{_bindir}/netserver
 
 %changelog
+* Sun Feb 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.4.5-1bismark3
+- Add tcp_wrappers-devel to BuildRequires.
+
+* Fri Feb 03 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.4.5-1bismark2
+- Patch to use tcp_wrappers/libwrap for server access control.
+
 * Wed Jan 18 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.4.5-1bismark1
 - Update package for BISmark measurement servers -- do not install .info files
 
