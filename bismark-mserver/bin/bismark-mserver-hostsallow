@@ -30,8 +30,8 @@ curl --header 'Accept: application/json' -4 -s \
 # include any base entries, and generate the hosts.allow from the JSON
 touch /tmp/hosts.allow
 chmod 644 /tmp/hosts.allow
-if [ -f /etc/hosts.allow.base ]; then
-    cat /etc/hosts.allow.base > /tmp/hosts.allow
+if [ -f /etc/hosts.allow.bismark ]; then
+    cat /etc/hosts.allow.bismark > /tmp/hosts.allow
 fi
 python /usr/bin/bismark-mserver-hostsallow-parse.py /tmp/hosts.allow.json \
     >> /tmp/hosts.allow
@@ -41,4 +41,5 @@ if [ -f /tmp/hosts.allow ] && $(tail -n 1 /tmp/hosts.allow | grep -q '^# done')
 then
     mv /tmp/hosts.allow /etc/hosts.allow
     rm /tmp/hosts.allow.json
+    cp /etc/hosts.deny.bismark /etc/hosts.deny
 fi
