@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -o nounset
 set -o errexit
@@ -6,50 +6,51 @@ set -o errexit
 # globals
 dont_prompt_use_default='n'
 
-function prompt_yn()
+prompt_yn()
 # $1 is prompt
 # $2 is default (Y|N)
 {
-    ([[ ! -z ${1:-} ]] && [[ ! -z ${2:-} ]]) || \
+    ([ ! -z "${1:-}" ] && [ ! -z "${2:-}" ]) || \
             (echo "prompt_yn requires 2 arguments." && exit 1)
 
     local response=''
     local prompt="$1"
-    local default="$( echo $2 | tr '[A-Z]' '[a-z]' )"
+    local default="$( echo "$2" | tr '[A-Z]' '[a-z]' )"
 
     if [ "$dont_prompt_use_default" = 'y' ]; then
         response="$default"
     else
-        if [[ $default == 'y' ]]; then
+        if [ "$default" = 'y' ]; then
             prompt="$prompt [Y/n] "
         else
             prompt="$prompt [y/N] "
         fi
-        read -e -p "$prompt" response
-        if [[ -z $response ]]; then
+        echo -n "$prompt" >&2
+        read -r response
+        if [ -z "$response" ]; then
             response="$default"
         fi
     fi
     response="$( echo $response | tr '[A-Z]' '[a-z]' )"
-    if [[ $response == 'y' ]]; then
+    if [ "$response" = 'y' ]; then
         return 0
     else
         return 1
     fi
 }
 
-function check_cmd()
+check_cmd()
 # $1 is command to look for
 # $2 (optional) is package to install if not found
 {
-    [[ ! -z ${1:-} ]] || \
+    [ ! -z "${1:-}" ] || \
             (echo "check_cmd requires at least 1 argument." && exit 1)
 
     local cmd="$1"
     local pkg="${2:-}"
 
-    if ! $(which $cmd &> /dev/null); then
-        if [[ -z "$pkg" ]]; then
+    if ! $(which $cmd > /dev/null 2>&1); then
+        if [ -z "$pkg" ]; then
             echo "Command '$cmd' not found."
         else
             echo "Command '$cmd' not found; install '$pkg' package."
@@ -58,35 +59,35 @@ function check_cmd()
     fi
 }
 
-function rpmlint_specs()
+rpmlint_specs()
 # $1, if set, this function will prompt to continue or exit (and use a pager)
 {
-    [ ! -z ${1:-} ] && prompt="y" || prompt="n"
-    rpmlint_generic 'rpmlint_specs' $rpmbuild_specs 'spec' $prompt
+    [ ! -z "${1:-}" ] && prompt="y" || prompt="n"
+    rpmlint_generic 'rpmlint_specs' "$rpmbuild_specs" 'spec' "$prompt"
 }
 
-function rpmlint_rpms()
+rpmlint_rpms()
 # $1, if set, this function will prompt to continue or exit (and use a pager)
 {
-    [ ! -z ${1:-} ] && prompt="y" || prompt="n"
-    rpmlint_generic 'rpmlint_rpms' $rpmbuild_rpms 'rpm' $prompt
+    [ ! -z "${1:-}" ] && prompt="y" || prompt="n"
+    rpmlint_generic 'rpmlint_rpms' "$rpmbuild_rpms" 'rpm' "$prompt"
 }
 
-function rpmlint_generic()
+rpmlint_generic()
 # $1 is the calling function name
 # $2 is the directory to search
 # $3 is the extension to search for
 # $4 if set, prompt the user to continue and use a pager
 {
-    [ ! -z ${2:-} ] || \
+    [ ! -z "${2:-}" ] || \
             (echo "$1 requires at least 1 argument." && exit 1)
-    ([ ! -z ${4:-} ] && [ "$4" = "y" ] && prompt="y") || prompt="n"
+    ([ ! -z "${4:-}" ] && [ "$4" = "y" ] && prompt="y") || prompt="n"
 
     check_cmd 'find' 'findutils'
     check_cmd 'xargs' 'findutils'
     check_cmd 'rpmlint' 'rpmlint'
     rpmlint_cmd="find $2 -name *.$3"
-    if [[ $prompt = 'y' ]]; then
+    if [ $prompt = 'y' ]; then
         $rpmlint_cmd | xargs rpmlint | less
         prompt_yn "Continue?" "Y" || exit 0
     else
@@ -94,38 +95,38 @@ function rpmlint_generic()
     fi
 }
 
-function setup_rpmvars()
+setup_rpmvars()
 {
-    rpmbuild_topdir=$(rpm --eval '%{_topdir}')
-    rpmbuild_sources=$(rpm --eval '%{_sourcedir}')
-    rpmbuild_specs=$(rpm --eval '%{_specdir}')
-    rpmbuild_rpms=$(rpm --eval '%{_rpmdir}')
-    rpmbuild_srpms=$(rpm --eval '%{_srcrpmdir}')
+    rpmbuild_topdir="$(rpm --eval '%{_topdir}')"
+    rpmbuild_sources="$(rpm --eval '%{_sourcedir}')"
+    rpmbuild_specs="$(rpm --eval '%{_specdir}')"
+    rpmbuild_rpms="$(rpm --eval '%{_rpmdir}')"
+    rpmbuild_srpms="$(rpm --eval '%{_srcrpmdir}')"
 }
 
-function clean_and_setup()
+clean_and_setup()
 {
     check_cmd 'rpmdev-setuptree' 'rpmdevtools'
     check_cmd 'rpmdev-wipetree' 'rpmdevtools'
 
     # confirm rpmdev-wipetree if $HOME/rpmbuild already exists
-    if [[ "$(dirname $(rpm --eval '%{_topdir}'))" == "$HOME" ]]; then
+    if [ "$(dirname $(rpm --eval '%{_topdir}'))" = "$HOME" ]; then
         prompt_yn "This will destroy the contents of '$(dirname $(rpm --eval '%{_topdir}'))'. Do you want to continue?" "N" || exit 2
     else
         rpmdev-setuptree
         echo "Setting up rpmbuild directory..."
     fi
     setup_rpmvars
-    rm "$rpmbuild_topdir/.setup_done"
+    rm -f "$rpmbuild_topdir/.setup_done"
     rpmdev-wipetree
     echo "Cleaning rpmbuild directory..."
 
     # symlink spec files from repo into %{_specdir}
     echo "Symlinking .spec files from repository..."
-    for specdir in $(find $abspath -mindepth 1 -maxdepth 1 -type d)
+    for specdir in $(find "$abspath" -mindepth 1 -maxdepth 1 -type d)
     do
-        pkg=$(basename $specdir)
-        if [[ -e "$specdir/$pkg.spec" ]]; then
+        pkg=$(basename "$specdir")
+        if [ -e "$specdir/$pkg.spec" ]; then
             ln -s -f "$specdir/$pkg.spec" "$rpmbuild_specs"
             echo "    $pkg.spec"
         fi
@@ -134,14 +135,14 @@ function clean_and_setup()
     echo "Setup done."
 }
 
-function get_sources()
+get_sources()
 {
     # symlink local source/patch files from repo into %{_sourcedir}
     echo "Symlinking local source & patch files from repository..."
-    for specdir in $(find $abspath -mindepth 1 -maxdepth 1 -type d)
+    for specdir in $(find "$abspath" -mindepth 1 -maxdepth 1 -type d)
     do
-        pkg=$(basename $specdir)
-        if [[ -e "$specdir/$pkg.spec" ]]; then
+        pkg=$(basename "$specdir")
+        if [ -e "$specdir/$pkg.spec" ]; then
             for srcfile in $(find $specdir \
                     -mindepth 1 -maxdepth 1 ! -name $pkg.spec)
             do
@@ -151,99 +152,99 @@ function get_sources()
     done
 
     # copy bismark-mserver source from repo directory into %{_sourcedir}
-    cd $abspath/../../
-    tar cz bismark-mserver > $rpmbuild_sources/bismark-mserver.tar.gz
+    cd "$abspath"/../../
+    tar cz bismark-mserver > "$rpmbuild_sources"/bismark-mserver.tar.gz
 
     # get sources indicated in specfiles
     echo "Downloading remote source files..."
-    specfiles=$(find $rpmbuild_specs -mindepth 1 -maxdepth 1 -name *.spec)
+    specfiles=$(find "$rpmbuild_specs" -mindepth 1 -maxdepth 1 -name *.spec)
     for specfile in $specfiles
     do
-        spectool --get-files --directory $rpmbuild_sources $specfile
+        spectool --get-files --directory "$rpmbuild_sources" "$specfile"
     done
     echo "Got all sources."
 }
 
-function build_bismarkmserver_only()
+build_bismarkmserver_only()
 {
     # copy bismark-mserver source from repo directory into %{_sourcedir}
-    cd $abspath/../../
-    tar cz bismark-mserver > $rpmbuild_sources/bismark-mserver.tar.gz
+    cd "$abspath"/../../
+    tar cz bismark-mserver > "$rpmbuild_sources"/bismark-mserver.tar.gz
 
     # clean build dirs for specific package
     rm -rf "$rpmbuild_rpms"/bismark-mserver*
     rm -rf "$rpmbuild_srpms"/bismark-mserver*
 
-    rpmbuild -ba $rpmbuild_specs/bismark-mserver.spec
+    rpmbuild -ba "$rpmbuild_specs"/bismark-mserver.spec
 }
 
 
-function build_all()
+build_all()
 {
     # clean build dirs
     rm -rf "$rpmbuild_rpms"/*
     rm -rf "$rpmbuild_srpms"/*
 
     # build RPMs
-    specfiles=$(find $rpmbuild_specs -mindepth 1 -maxdepth 1 -name *.spec)
+    specfiles=$(find "$rpmbuild_specs" -mindepth 1 -maxdepth 1 -name *.spec)
     for specfile in $specfiles
     do
-        rpmbuild -ba $specfile
+        rpmbuild -ba "$specfile"
     done
 }
 
-function compile_repo()
+compile_repo()
 {
     check_cmd 'find' 'findutils'
     check_cmd 'xargs' 'findutils'
     check_cmd 'rpmlint' 'rpmlint'
     # sign packages?
     sign_rpms=false
-    if [[ "$(rpm --eval '%_gpg_name')" != "%_gpg_name" ]] && \
+    if [ "$(rpm --eval '%_gpg_name')" != "%_gpg_name" ] && \
             prompt_yn "Sign RPMs with GPG?" "Y"; then
-        find $rpmbuild_rpms $rpmbuild_srpms -name *.rpm | xargs rpm --addsign
+        find "$rpmbuild_rpms" "$rpmbuild_srpms" -name *.rpm | xargs rpm --addsign
         sign_rpms=true
     fi
 
     # start creating web repository
-    webdir="$rpmbuild_topdir/www/mlab_fedora/fc8/"
+    webdir="$rpmbuild_topdir"/www/mlab_fedora/fc8/
     rm -rf "$rpmbuild_topdir"/www/*
 
     # copy RPMs & make repodata
-    mkdir -p "$webdir/i386"
-    find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 ! -name '*-debuginfo-*' \
-            -exec cp '{}' "$webdir/i386/" \;
-    cp -a "$rpmbuild_rpms/noarch/"*.rpm "$webdir/i386/"
-    createrepo -o "$webdir/i386" -v -d "$webdir/i386"
-    $sign_rpms && gpg -a --detach-sign "$webdir/i386/repodata/repomd.xml"
+    mkdir -p "$webdir"/i386
+    find "$rpmbuild_rpms"/i386/ -mindepth 1 -maxdepth 1 ! -name '*-debuginfo-*' \
+            -exec cp '{}' "$webdir"/i386/ \;
+    cp -a "$rpmbuild_rpms"/noarch/*.rpm "$webdir"/i386/
+    createrepo -o "$webdir"/i386 -v -d "$webdir"/i386
+    $sign_rpms && gpg -a --detach-sign "$webdir"/i386/repodata/repomd.xml
 
     # copy debuginfo RPMs & make repodata
-    mkdir -p "$webdir/i386/debug"
-    find "$rpmbuild_rpms/i386/" -mindepth 1 -maxdepth 1 -name '*-debuginfo-*' \
-            -exec cp '{}' "$webdir/i386/debug/" \;
-    createrepo -o "$webdir/i386/debug" -v -d "$webdir/i386/debug"
-    $sign_rpms && gpg -a --detach-sign "$webdir/i386/debug/repodata/repomd.xml"
+    mkdir -p "$webdir"/i386/debug
+    find "$rpmbuild_rpms"/i386/ -mindepth 1 -maxdepth 1 -name '*-debuginfo-*' \
+            -exec cp '{}' "$webdir"/i386/debug/ \;
+    createrepo -o "$webdir"/i386/debug -v -d "$webdir"/i386/debug
+    $sign_rpms && gpg -a --detach-sign "$webdir"/i386/debug/repodata/repomd.xml
 
     # copy SRPMs & make repodata
-    mkdir -p "$webdir/source/SRPMS"
-    cp -a "$rpmbuild_srpms"/*.src.rpm "$webdir/source/SRPMS/"
-    createrepo -o "$webdir/source/SRPMS" -v -d "$webdir/source/SRPMS"
-    $sign_rpms && gpg -a --detach-sign "$webdir/source/SRPMS/repodata/repomd.xml"
+    mkdir -p "$webdir"/source/SRPMS
+    cp -a "$rpmbuild_srpms"/*.src.rpm "$webdir"/source/SRPMS/
+    createrepo -o "$webdir"/source/SRPMS -v -d "$webdir"/source/SRPMS
+    $sign_rpms && gpg -a --detach-sign "$webdir"/source/SRPMS/repodata/repomd.xml
 
     # export GPG key
-    $sign_rpms && gpg --export --armor > "$webdir/RPM-GPG-KEY-bismark"
+    $sign_rpms && gpg --export --armor > "$webdir"/RPM-GPG-KEY-bismark
 }
 
-function upload()
+upload()
 {
-    webdir="$rpmbuild_topdir/www/mlab_fedora/fc8/"
+    webdir="$rpmbuild_topdir"/www/mlab_fedora/fc8/
     ssh woodrow@beachmont.noise.gatech.edu \
         "rm -rf ~/bismark-mserver/mlab_fedora/*"
     scp -r "$webdir" \
         woodrow@beachmont.noise.gatech.edu:~/bismark-mserver/mlab_fedora/
 }
 
-function usage()
+usage()
 {
     echo "USAGE: $0 command"
     echo "where command is one of:"
@@ -260,7 +261,7 @@ function usage()
     exit 2
 }
 
-function main()
+main()
 {
     # determine absolute path to this script (won't work if called through $PATH)
     relpath=$(dirname "$0")
@@ -270,8 +271,8 @@ function main()
     check_cmd 'rpm' 'rpm'
 
     # confirm rpmdev-setuptree in $HOME
-    if [[ "$USER" != 'makerpm' ]] &&
-            [[ "$(dirname $(rpm --eval '%{_topdir}'))" != "$HOME" ]]; then
+    if [ "$USER" != 'makerpm' ] &&
+            [ "$(dirname $(rpm --eval '%{_topdir}'))" != "$HOME" ]; then
         prompt_yn "User '$USER' doesn't look like a build account.
                    Are you sure you want to set up an rpmbuild directory in this
                    user's home directory?" "N" || exit 2
@@ -282,7 +283,7 @@ function main()
         clean_and_setup
     fi
 
-    if [ -z ${1:-} ]; then
+    if [ -z "${1:-}" ]; then
         usage
     fi
 
@@ -340,7 +341,7 @@ function main()
     esac
 }
 
-if [ ! -z ${1:-} ]; then
+if [ ! -z "${1:-}" ]; then
     main $1
 else
     main
