@@ -50,7 +50,6 @@ run)
         fi
         if ! $daemon_running; then
             daemon_pid=$(su - $MSERVER_UNPRIV_USER -c "$daemon echopid")
-            echo "$daemon_pid"
             echo "$daemon_pid" > $pidfile
         fi
     done

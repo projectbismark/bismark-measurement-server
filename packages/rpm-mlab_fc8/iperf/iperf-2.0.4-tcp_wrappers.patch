@@ -1,0 +1,68 @@
+diff --git a/iperf-2.0.4/src/Listener.cpp b/iperf-2.0.4/src/Listener.cpp
+index 94e32de..6ba25d3 100644
+--- a/iperf-2.0.4/src/Listener.cpp
++++ b/iperf-2.0.4/src/Listener.cpp
+@@ -80,6 +80,13 @@
+ #include "List.h"
+ #include "util.h" 
+ 
++#define TCP_WRAPPERS /* this should be done with autotools */
++
++#ifdef TCP_WRAPPERS
++#include "tcpd.h"
++#define NI_LEN 256
++#endif
++
+ /* ------------------------------------------------------------------- 
+  * Stores local hostname and socket info. 
+  * ------------------------------------------------------------------- */ 
+@@ -192,6 +199,49 @@ void Listener::Run( void ) {
+                     continue;
+                 }
+             }
++#ifdef TCP_WRAPPERS
++            int nierror = 0;
++            int client_allowed = 0;
++            char c_addr[NI_LEN], c_name[NI_LEN];
++
++            /* set up severity variables for libwrap */
++            allow_severity = 0;
++            deny_severity = 0;
++
++            /* get client name and IP address */
++            if(nierror = getnameinfo((sockaddr*) &server->peer,
++                server->size_peer, (char *)&c_addr, NI_LEN, NULL, NULL,
++                NI_NUMERICHOST))
++            {
++                printf("tcp_wrappers: getnameinfo failed: %s\n",
++                       gai_strerror(nierror));
++                exit(1);
++            }
++            if(getnameinfo((sockaddr*) &server->peer, server->size_peer,
++                (char *)&c_name, NI_LEN, NULL, NULL, NI_NAMEREQD))
++            {
++                client_allowed = hosts_ctl("iperf",
++                                   STRING_UNKNOWN,
++                                   c_addr,
++                                   STRING_UNKNOWN);
++            } else {
++                client_allowed = hosts_ctl("iperf",
++                                   c_name,
++                                   c_addr,
++                                   STRING_UNKNOWN);
++            }
++            /* hosts_ctl returns 0 if access is denied */
++            if(!client_allowed)
++            {
++                // Not allowed try again (borrowed from :193-199 above)
++                close( server->mSock );
++                if ( isUDP( mSettings ) ) {
++                    mSettings->mSock = -1;
++                    Listen();
++                }
++                continue;
++            }
++#endif
+     
+             // Create an entry for the connection list
+             listtemp = new Iperf_ListEntry;

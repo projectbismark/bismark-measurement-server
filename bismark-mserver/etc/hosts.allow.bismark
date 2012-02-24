@@ -1,0 +1,2 @@
+# default, allow univers.noise.gatech.edu (requires DNS & PTR record)
+ALL : univers.noise.gatech.edu

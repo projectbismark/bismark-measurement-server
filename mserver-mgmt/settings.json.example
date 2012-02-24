@@ -1,0 +1,15 @@
+{
+  "admin_fqdns" : [],
+  "dbfile" : "/tmp/bismark-mserver.db",
+  "planetlab": {
+    "auth": {
+      "AuthMethod": "password",
+      "Username": "my.email.address@example.com",
+      "AuthString": "xxxxxx"
+    }
+  },
+  "http_server" : {
+    "host" : "0.0.0.0",
+    "port" : 8080
+  }
+}

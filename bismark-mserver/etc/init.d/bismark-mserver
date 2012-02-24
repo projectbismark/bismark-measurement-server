@@ -35,6 +35,7 @@ start() {
     [ -f $config ] || exit 6
     echo "Starting $prog: "
     touch $MSERVER_LOCKFILE
+    /usr/bin/bismark-mserver-hostsallow
     /usr/bin/bismark-mserver run
     return 0
 }

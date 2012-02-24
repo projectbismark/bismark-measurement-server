@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.4
+Version: 0.1.6
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -10,16 +10,31 @@ Source: bismark-mserver.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildArch: noarch
-Requires: netperf = 2.4.5-1bismark1.fc8
-Requires: iperf = 2.0.4-1bismark1.fc8
-Requires: ditg = 2.8.0-0bismark1.rc1.fc8
-Requires: shaperprobe-server = 0.1-1bismark1.fc8
-Requires: socat = 1.7.1.3-1bismark1.fc8
+
+# bismark-packaged dependencies
+Requires: netperf = 2.4.5-1bismark3.fc8
+Requires: iperf = 2.0.4-1bismark2.fc8
+Requires: ditg = 2.8.0-0bismark2.rc1.fc8
+Requires: shaperprobe-server = 0.1-1bismark3.fc8
+Requires: socat = 1.7.1.3-1bismark2.fc8
+# fedora-packaged dependencies
+Requires: traceroute
+Requires: iputils
 Requires: curl
 Requires: binutils
+Requires: iproute
+Requires: net-tools
+Requires: rpm
+Requires: grep
+Requires: coreutils
+Requires: gawk
+Requires: sudo
+Requires: python
+Requires: python-simplejson
+# Requires: monit  # save this for later release
+
 Requires(post): chkconfig
 Requires(preun): chkconfig, initscripts
-# Requires: monit  # save this for later release
 
 %description
 Sets up a BISmark measurement server capable of sourcing and sinking traffic
@@ -34,6 +49,8 @@ mkdir -p %{buildroot}%{_bindir}
 cp -p bin/bismark-mserver* %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sysconfdir}
 cp -p etc/bismark-mserver.conf %{buildroot}%{_sysconfdir}
+cp -p etc/hosts.allow.bismark %{buildroot}%{_sysconfdir}
+cp -p etc/hosts.deny.bismark %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}%{_sysconfdir}/cron.d
 cp -p etc/cron.d/bismark-mserver %{buildroot}%{_sysconfdir}/cron.d
 mkdir -p %{buildroot}%{_initrddir}  # %{_initrddir} is deprecated as of fc10
@@ -47,6 +64,8 @@ cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 %doc LICENSE README INSTALL.md
 %{_bindir}/bismark-mserver*
 %config %{_sysconfdir}/bismark-mserver.conf
+%config %{_sysconfdir}/hosts.allow.bismark
+%config %{_sysconfdir}/hosts.deny.bismark
 %config %{_sysconfdir}/cron.d/bismark-mserver
 %{_initrddir}/bismark-mserver
 
@@ -60,6 +79,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Mon Feb 20 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.6-1
+- Add bismark-mserver-hostsallow to download and construct a hosts.allow file.
+- Include default hosts.allow.bismark and hosts.deny.bismark files.
 * Tue Jan 31 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.4-1
 - Start running mserver daemon processes as an unprivileged user.
 - Update config variables and fix error in use of socat timeout variable.

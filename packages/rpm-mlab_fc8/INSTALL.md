@@ -58,8 +58,8 @@
 5. Create an unprivileged user to run the bismark-mserver daemons:
 
     ```sh
-    $ /usr/sbin/useradd gt_bismark_unpriv
-    $ /usr/sbin/usermod -L gt_bismark_unpriv
+    $ sudo /usr/sbin/useradd gt_bismark_unpriv
+    $ sudo /usr/sbin/usermod -L gt_bismark_unpriv
     ```
 
     The username must match the `MSERVER_UNPRIV_USER` variable, so either
@@ -68,7 +68,7 @@
     `/etc/bismark-mserver.conf` accordingly.
 
 6. Enable the unprivileged user to perform ICMP and TCP traceroutes by
-   appending the following to your sudoers file with `sudo /usr/bin/visudo`:
+   appending the following to your sudoers file with `sudo /usr/sbin/visudo`:
 
     ```
     ## Traceroutes requiring root, used by bismark-mserver
