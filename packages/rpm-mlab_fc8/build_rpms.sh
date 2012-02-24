@@ -122,7 +122,7 @@ clean_and_setup()
     echo "Cleaning rpmbuild directory..."
 
     # symlink spec files from repo into %{_specdir}
-    echo "Symlinking .spec files from repository..."
+    echo "Symlinking .spec files from source repository..."
     for specdir in $(find "$abspath" -mindepth 1 -maxdepth 1 -type d)
     do
         pkg=$(basename "$specdir")
@@ -137,8 +137,8 @@ clean_and_setup()
 
 get_sources()
 {
-    # symlink local source/patch files from repo into %{_sourcedir}
-    echo "Symlinking local source & patch files from repository..."
+    # copy local source/patch files from repo into %{_sourcedir}
+    echo "Copying local source & patch files from source repository..."
     for specdir in $(find "$abspath" -mindepth 1 -maxdepth 1 -type d)
     do
         pkg=$(basename "$specdir")
@@ -147,11 +147,13 @@ get_sources()
                     -mindepth 1 -maxdepth 1 ! -name $pkg.spec)
             do
                 cp -f -a "$srcfile" "$rpmbuild_sources"
+                echo "    $srcfile"
             done
         fi
     done
 
     # copy bismark-mserver source from repo directory into %{_sourcedir}
+    echo "Copying bismark-mserver from source repository..."
     cd "$abspath"/../../
     tar cz bismark-mserver > "$rpmbuild_sources"/bismark-mserver.tar.gz
 
@@ -168,20 +170,25 @@ get_sources()
 build_bismarkmserver_only()
 {
     # copy bismark-mserver source from repo directory into %{_sourcedir}
+    echo "Copying bismark-mserver from source repository..."
     cd "$abspath"/../../
     tar cz bismark-mserver > "$rpmbuild_sources"/bismark-mserver.tar.gz
 
     # clean build dirs for specific package
+    echo "Cleaning package build output directories..."
     rm -rf "$rpmbuild_rpms"/bismark-mserver*
     rm -rf "$rpmbuild_srpms"/bismark-mserver*
 
+    echo "Building bismark-mserver package..."
     rpmbuild -ba "$rpmbuild_specs"/bismark-mserver.spec
+    echo "Done building bismark-mserver package."
 }
 
 
 build_all()
 {
     # clean build dirs
+    echo "Cleaning package build output directories..."
     rm -rf "$rpmbuild_rpms"/*
     rm -rf "$rpmbuild_srpms"/*
 
@@ -189,8 +196,10 @@ build_all()
     specfiles=$(find "$rpmbuild_specs" -mindepth 1 -maxdepth 1 -name *.spec)
     for specfile in $specfiles
     do
+        echo "Building $specfile..."
         rpmbuild -ba "$specfile"
     done
+    echo "Done building all packages."
 }
 
 compile_repo()
@@ -233,6 +242,8 @@ compile_repo()
 
     # export GPG key
     $sign_rpms && gpg --export --armor > "$webdir"/RPM-GPG-KEY-bismark
+
+    echo "RPM repo is compiled."
 }
 
 upload()
@@ -242,6 +253,7 @@ upload()
         "rm -rf ~/bismark-mserver/mlab_fedora/*"
     scp -r "$webdir" \
         woodrow@beachmont.noise.gatech.edu:~/bismark-mserver/mlab_fedora/
+    echo "RPM repo uploaded to server."
 }
 
 usage()
