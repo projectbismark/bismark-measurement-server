@@ -2,7 +2,7 @@ class bismark_mserver::mlab_fc8 {
     user { 'gt_bismark_unpriv' :
         ensure   => present,
         shell    => '/bin/bash',
-        password => '!!'  # lock the password
+        password => '!'  # lock the password
     }
 
     file { '/etc/sudoers' :
@@ -10,7 +10,7 @@ class bismark_mserver::mlab_fc8 {
         alias  => sudoers,
         owner  => root,
         group  => root,
-        mode   => 400,
+        mode   => 440,
         ensure => file,
         source => 'puppet:///modules/bismark_mserver/etc/sudoers',
         backup => server_bucket
@@ -37,9 +37,7 @@ class bismark_mserver::mlab_fc8 {
     }
 
     cron { yum_checkupdate :
-        command => '/usr/bin/yum clean metadata && \
-                    sleep $((($RANDOM*600)/32767)) && \
-                    /usr/bin/yum -y check-update',
+        command => '/usr/bin/yum clean metadata && sleep $((($RANDOM*600)/32767)) && /usr/bin/yum -y check-update',
         ensure  => present,
         user    => root,
         hour    => [0, 6, 12, 18],
@@ -48,8 +46,7 @@ class bismark_mserver::mlab_fc8 {
     }
 
     cron { puppet_agent :
-        command => 'sleep $((($RANDOM*600)/32767)) && \
-                    /usr/bin/puppet agent',
+        command => 'sleep $((($RANDOM*600)/32767)) && /usr/bin/puppet agent',
         ensure  => present,
         user    => root,
         hour    => [0, 6, 12, 18],
