@@ -30,10 +30,11 @@ sudo yum -y clean metadata
 sudo yum -y check-update
 sudo yum -y update
 
+# sed line prevent errors due to https://projects.puppetlabs.com/issues/9491
 sudo puppet agent --genconfig \
                   --server mserver-mgmt.projectbismark.net \
                   --certname bismark.gt.`hostname` \
-                  --splay \
                   --onetime \
+    | sed -r 's/(^\s+)(factsource|factdest)/\1# \2/' \
     | sudo tee /etc/puppet/puppet.conf > /dev/null
 sudo puppet agent --test --waitforcert
