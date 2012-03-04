@@ -26,7 +26,9 @@ class bismark_mserver::mlab_fc8 {
 
     service { 'crond' :
         enable => true,
-        ensure => running
+        ensure => running,
+        # hack to deal with non-LSB-compliant status of vixie-cron initscript
+        hasstatus => false
     }
 
     service { 'bismark-mserver' :
