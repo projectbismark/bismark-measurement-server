@@ -29,6 +29,7 @@ EOF
 sudo yum -y clean metadata
 sudo yum -y check-update
 sudo yum -y update
+sudo yum -y install puppet
 
 # sed line prevent errors due to https://projects.puppetlabs.com/issues/9491
 sudo puppet agent --genconfig \
