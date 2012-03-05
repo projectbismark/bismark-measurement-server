@@ -8,25 +8,52 @@ set -o errexit
 # Load configuration
 . /etc/bismark-mserver.conf
 
-export NETSERVER_PARENT="BISMARK_$$"
-netserver -4 -p $NETPERF_PORT >> /tmp/bismark-mserver-netperf.log 2>&1 &
+run_netserver() {
+    export NETSERVER_PARENT="BISMARK_$$"
+    netserver -4 -p $NETPERF_PORT >> /tmp/bismark-mserver-netperf.log 2>&1 &
+}
+
+usage() {
+    echo "Usage: $0 [no-]echopid"
+    exit 1
+}
 
 if [ ! -z ${1:-} ]; then
     case "$1" in
     echopid)
-        pids=$(ps -ef | awk '$8=="netserver" { print $2 }')
-        for pid in $pids
+        run_netserver
+        netserver_pid=''
+        attempts=0
+        maxattempts=3
+        while [ -z "$netserver_pid" -a "$attempts" -lt "$maxattempts" ]
         do
-            if [ $(strings "/proc/$pid/environ" | \
-                   grep -c "NETSERVER_PARENT=$NETSERVER_PARENT") -gt 0 ]; then
-                    echo "$pid"
+            sleep 2  # allow netserver time to fork
+            pids=$(ps -ef | awk '$8=="netserver" { print $2 }')
+            for pid in $pids
+            do
+                if [ $(strings "/proc/$pid/environ" | \
+                       grep -c "NETSERVER_PARENT=$NETSERVER_PARENT") -gt 0 ]
+                then
+                    netserver_pid="$pid"
                     break
-            fi
+                fi
+            done
+            attempts=$(($attempts + 1))
         done
+        if [ -z "$netserver_pid" ]; then
+            # last-ditch effort -- look at what's bound to $NETPERF_PORT
+            netserver_pid=$(netstat -lntp | grep "$NETPERF_PORT".*netserver | \
+                            grep -o '[0-9]\+/netserver' | cut -d '/' -f 1)
+        fi
+        echo "$netserver_pid"
+        ;;
+    no-echopid)
+        run_netserver
         ;;
     *)
-        echo "Usage: $0 [echopid]"
-        exit 1
+        usage
         ;;
     esac
+else
+    usage
 fi
