@@ -28,7 +28,7 @@ class bismark_mserver::mlab_fc8 {
     }
 
     package { 'bismark-mserver':
-        require => 'yum_checkupdate',
+        require => Exec['yum_checkupdate'],
         ensure => latest
     }
 
