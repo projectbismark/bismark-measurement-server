@@ -1,10 +1,10 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.6
+Version: 0.1.7
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
-URL: http://redmine.noise.gatech.edu/projects/bismark-mserver
+URL: https://github.com/projectbismark/bismark-measurement-server
 
 Source: bismark-mserver.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -14,7 +14,7 @@ BuildArch: noarch
 # bismark-packaged dependencies
 Requires: netperf = 2.4.5-1bismark3.fc8
 Requires: iperf = 2.0.4-1bismark2.fc8
-Requires: ditg = 2.8.0-0bismark2.rc1.fc8
+Requires: ditg = 2.8.0-0bismark3.rc1.fc8
 Requires: shaperprobe-server = 0.1-1bismark3.fc8
 Requires: socat = 1.7.1.3-1bismark2.fc8
 # fedora-packaged dependencies
@@ -63,14 +63,15 @@ cp -p etc/init.d/bismark-mserver %{buildroot}%{_initrddir}
 %defattr(-, root, root, 0755)
 %doc LICENSE README INSTALL.md
 %{_bindir}/bismark-mserver*
-%config %{_sysconfdir}/bismark-mserver.conf
-%config %{_sysconfdir}/hosts.allow.bismark
-%config %{_sysconfdir}/hosts.deny.bismark
-%config %{_sysconfdir}/cron.d/bismark-mserver
+%config(noreplace) %{_sysconfdir}/bismark-mserver.conf
+%config(noreplace) %{_sysconfdir}/hosts.allow.bismark
+%config(noreplace) %{_sysconfdir}/hosts.deny.bismark
+%config(noreplace) %{_sysconfdir}/cron.d/bismark-mserver
 %{_initrddir}/bismark-mserver
 
 %post
 /sbin/chkconfig --add %{name}
+/sbin/service crond reload
 
 %preun
 if [ $1 -eq 0 ]; then
@@ -79,6 +80,11 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-1
+- Add bismark-mserver-iperf_{tcp,udp} wrapper scripts.
+- Change %config files to %config(noreplace).
+- Depend on patched ditg.
+- Heartbeat tries to include puppet $config_version.
 * Mon Feb 20 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.6-1
 - Add bismark-mserver-hostsallow to download and construct a hosts.allow file.
 - Include default hosts.allow.bismark and hosts.deny.bismark files.

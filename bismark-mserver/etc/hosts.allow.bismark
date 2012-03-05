@@ -1,2 +1,1 @@
-# default, allow univers.noise.gatech.edu (requires DNS & PTR record)
-ALL : univers.noise.gatech.edu
+# no special entries by default -- manage with puppet/etc.
