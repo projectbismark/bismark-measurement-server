@@ -1,6 +1,6 @@
-diff -aur /tmp/D-ITG-2.8.0-rc1/src/ITGSend/ITGSend.cpp ./src/ITGSend/ITGSend.cpp
---- /tmp/D-ITG-2.8.0-rc1/src/ITGSend/ITGSend.cpp	2011-08-07 07:27:50.000000000 -0400
-+++ ./src/ITGSend/ITGSend.cpp	2011-10-11 07:39:31.000000000 -0400
+diff -aur a/D-ITG-2.8.0-rc1/src/ITGSend/ITGSend.cpp b/D-ITG-2.8.0-rc1/src/ITGSend/ITGSend.cpp
+--- a/D-ITG-2.8.0-rc1/src/ITGSend/ITGSend.cpp	2011-08-07 07:27:50.000000000 -0400
++++ b/D-ITG-2.8.0-rc1/src/ITGSend/ITGSend.cpp	2011-10-11 07:39:31.000000000 -0400
 @@ -3624,8 +3624,8 @@
  	struct addrinfo * TmpAddress=NULL;	
  	int reuse=1;						
