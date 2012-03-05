@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# bismark-mserver throughput, packet loss, jitter (iperf) measurements via TCP
+
+set -o nounset
+set -o errexit
+
+# Load configuration
+. /etc/bismark-mserver.conf
+
+run_iperf() {
+    iperf_pid=''
+    if [ ! -z ${IPERF_TCP_PORT:-} ]; then
+        if [ "$IPERF_TCP_PORT" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
+            echo "Sorry, $0 can't bind to ports < 1024. Terminating."
+            exit 1
+        fi
+        iperf -s -p $IPERF_TCP_PORT \
+                >> /tmp/bismark-mserver-iperf_tcp.log 2>&1 &
+        iperf_pid="$!"
+    fi
+}
+
+usage() {
+    echo "Usage: $0 [no-]echopid"
+    exit 1
+}
+
+if [ ! -z ${1:-} ]; then
+    case "$1" in
+    echopid)
+        run_iperf
+        echo "$iperf_pid"
+        ;;
+    no-echopid)
+        run_iperf
+        ;;
+    *)
+        usage
+        ;;
+    esac
+else
+    usage
+fi

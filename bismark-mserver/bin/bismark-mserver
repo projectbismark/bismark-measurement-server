@@ -11,6 +11,8 @@ set -o errexit
 INITD_FILE='/etc/rc.d/init.d/bismark-mserver'
 
 daemons="bismark-mserver-rtraceroute \
+         bismark-mserver-iperf_tcp \
+         bismark-mserver-iperf_udp \
          bismark-mserver-itg_dw \
          bismark-mserver-itg_up \
          bismark-mserver-shaperprobe \
