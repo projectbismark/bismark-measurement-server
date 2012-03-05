@@ -20,7 +20,15 @@ class bismark_mserver::mlab_fc8 {
         path => false  # backup to server
     }
 
+    exec { yum_checkupdate :
+        alias   => yum_checkupdate,
+        command => '/usr/bin/yum clean metadata && /usr/bin/yum -y check-update',
+        user    => root,
+        group   => root,
+    }
+
     package { 'bismark-mserver':
+        require => yum_checkupdate,
         ensure => latest
     }
 
@@ -38,20 +46,11 @@ class bismark_mserver::mlab_fc8 {
         hasstatus => false
     }
 
-    cron { yum_checkupdate :
-        command => '/usr/bin/yum clean metadata && sleep $((($RANDOM*600)/32767)) && /usr/bin/yum -y check-update',
+    cron { puppet_agent :
+        command => '/bin/sleep $((($RANDOM*600)/32767)) && /usr/bin/puppet agent',
         ensure  => present,
         user    => root,
         hour    => [0, 6, 12, 18],
         minute  => 0
-
-    }
-
-    cron { puppet_agent :
-        command => 'sleep $((($RANDOM*600)/32767)) && /usr/bin/puppet agent',
-        ensure  => present,
-        user    => root,
-        hour    => [0, 6, 12, 18],
-        minute  => 30
     }
 }
