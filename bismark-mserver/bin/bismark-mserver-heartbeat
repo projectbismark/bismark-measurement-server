@@ -15,19 +15,30 @@ fi
 
 heartbeat_msg="/tmp/bismark_heartbeat_message"
 
+# determine the public ip address of this slice
 default_if=$(/sbin/ip route | grep default | head -n 1 | \
              grep -oP "dev\s+\S+" | awk -F ' ' '{print $2}')
-global_ip=$(/sbin/ip addr show dev "$default_if" |
+public_ip=$(/sbin/ip addr show dev "$default_if" |
             grep -oP '^\s+inet\s(\d+\.){3}\d+' | head -n 1 | \
             awk -F ' ' '{print $2}')
+# determine the hostname of this slice
 hostname="bismark.gt.$(hostname)"
+# determine bismark-mserver package version number
 pkg_version=$(rpm --query bismark-mserver \
                   --queryformat %{VERSION}-%{RELEASE} 2> /dev/null \
               || echo 'N/A')
+# determine puppet config_version (git commit hash of repo HEAD)
+puppet_lrr=$(puppet config print lastrunreport)
+puppet_config_version=$(grep 'configuration_version' "$puppet_lrr" | \
+                        awk '{print $NF}')
+if [ -z "$puppet_config_version" ]; then
+    puppet_config_version='N/A'
+fi
 
 echo "{
-      \"ip\":                      \"$global_ip\",
-      \"bismark-mserver_version\": \"$pkg_version\"
+      \"ip\":                      \"$public_ip\",
+      \"bismark-mserver_version\": \"$pkg_version\",
+      \"puppet-config_version\":   \"$puppet_config_version\"
       }" > $heartbeat_msg
 
 curl --request POST \
