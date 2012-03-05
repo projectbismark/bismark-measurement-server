@@ -21,14 +21,14 @@ class bismark_mserver::mlab_fc8 {
     }
 
     exec { yum_checkupdate :
-        alias   => yum_checkupdate,
+        alias   => 'yum_checkupdate',
         command => '/usr/bin/yum clean metadata && /usr/bin/yum -y check-update',
         user    => root,
         group   => root,
     }
 
     package { 'bismark-mserver':
-        require => yum_checkupdate,
+        require => 'yum_checkupdate',
         ensure => latest
     }
 
