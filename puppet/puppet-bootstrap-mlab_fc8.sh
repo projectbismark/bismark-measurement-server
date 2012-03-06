@@ -37,8 +37,9 @@ sudo puppet agent --genconfig \
                   --certname bismark.gt.`hostname` \
                   --req_bits 4096 \
                   --keylength 4096 \
+                  --ca_md sha1 \
                   --no-daemonize \
                   --onetime \
     | sed -r 's/(^\s+)(factsource|factdest)/\1# \2/' \
     | sudo tee /etc/puppet/puppet.conf > /dev/null
-sudo puppet agent --test --waitforcert 60
+sudo puppet agent --test --waitforcert 10
