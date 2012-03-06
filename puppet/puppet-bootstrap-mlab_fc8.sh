@@ -35,6 +35,8 @@ sudo yum -y install puppet
 sudo puppet agent --genconfig \
                   --server mserver-mgmt.projectbismark.net \
                   --certname bismark.gt.`hostname` \
+                  --req_bits 4096 \
+                  --keylength 4096 \
                   --no-daemonize \
                   --onetime \
     | sed -r 's/(^\s+)(factsource|factdest)/\1# \2/' \
