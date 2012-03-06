@@ -108,7 +108,8 @@ def get_mserver(db, mserver_fqdn):
                 'fqdn' : row['fqdn'],
                 'ip' : row['ip'],
                 'last_seen' : row['last_seen'],
-                'bismark-mserver_version' : row['version']
+                'bismark-mserver_version' : row['version'],
+                'puppet_config_version' : row['puppet_version']
                 }
     raise bottle.HTTPError(404, "mserver not found.")
 
@@ -139,11 +140,12 @@ def post_mserver(db, mserver_fqdn):
 
         db.execute(
                 'REPLACE INTO mservers '
-                '(fqdn, ip, last_seen, version) VALUES (?,?,?,?);',
+                '(fqdn, ip, last_seen, version, puppet_version) VALUES (?,?,?,?,?);',
                 (mserver_fqdn,
                 bottle.request.json['ip'],
                 int(time.time()),
-                bottle.request.json['bismark-mserver_version']))
+                bottle.request.json['bismark-mserver_version'],
+                bottle.request.json.get('puppet_config_version', None)))
         db.commit()
         return bottle.HTTPResponse(status=204)
     else:
@@ -191,7 +193,8 @@ def check_sqlite(db):
             "   (fqdn text primary key, "
             "   ip text, "
             "   last_seen integer, "
-            "   version text);")
+            "   version text, "
+            "   puppet_version text);")
         db.commit()
     if not db.execute(
             "SELECT name "

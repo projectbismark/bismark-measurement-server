@@ -38,7 +38,7 @@ fi
 echo "{
       \"ip\":                      \"$public_ip\",
       \"bismark-mserver_version\": \"$pkg_version\",
-      \"puppet-config_version\":   \"$puppet_config_version\"
+      \"puppet_config_version\":   \"$puppet_config_version\"
       }" > $heartbeat_msg
 
 curl --request POST \
