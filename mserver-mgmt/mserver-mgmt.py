@@ -9,6 +9,7 @@ import json
 import time
 import socket
 import xmlrpclib
+import datetime
 
 # make some middleware
 # responsibilities include:
@@ -108,6 +109,8 @@ def get_mserver(db, mserver_fqdn):
                 'fqdn' : row['fqdn'],
                 'ip' : row['ip'],
                 'last_seen' : row['last_seen'],
+                'last_seen_iso_utc' : datetime.datetime.utcfromtimestamp(
+                        row['last_seen']).isoformat(),
                 'bismark-mserver_version' : row['version'],
                 'puppet_config_version' : row['puppet_version']
                 }
