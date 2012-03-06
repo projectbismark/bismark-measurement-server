@@ -28,9 +28,20 @@ pkg_version=$(rpm --query bismark-mserver \
                   --queryformat %{VERSION}-%{RELEASE} 2> /dev/null \
               || echo 'N/A')
 # determine puppet config_version (git commit hash of repo HEAD)
-puppet_lrr=$(puppet config print lastrunreport)
-puppet_config_version=$(grep 'configuration_version' "$puppet_lrr" | \
-                        awk '{print $NF}')
+puppet_config_version=''
+attempts=0
+maxattempts=3
+while [ $attempts -lt $maxattempts ]
+do
+    puppet_lrr=$(puppet config print lastrunreport)
+    if [ ! -z "$puppet_lrr" ]; then
+        puppet_config_version=$(grep 'configuration_version' "$puppet_lrr" | \
+                                awk '{print $NF}')
+        break
+    fi
+    sleep 2
+    attempts=$(($attempts+1))
+done
 if [ -z "$puppet_config_version" ]; then
     puppet_config_version='N/A'
 fi
