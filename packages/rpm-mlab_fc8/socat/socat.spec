@@ -9,12 +9,12 @@
 Summary: Relay for bidirectional data transfer between 2 channels
 Name: socat
 Version: 1.7.1.3
-Release: 1bismark2%{?dist}
+Release: 1bismark3%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: http://www.dest-unreach.org/socat/
 
-Packager: Dag Wieers <dag@wieers.com>
+#Packager: Dag Wieers <dag@wieers.com>
 Vendor: Dag Apt Repository, http://dag.wieers.com/apt/
 
 Source: http://www.dest-unreach.org/socat/download/socat-%{version}.tar.gz
@@ -31,7 +31,7 @@ SSL socket, proxy CONNECT connection, a file descriptor (stdin etc.), the GNU
 line editor, a program, or a combination of two of these.
 
 %prep
-%setup
+%setup -q
 
 %build
 %configure --disable-fips
@@ -54,6 +54,9 @@ line editor, a program, or a combination of two of these.
 %{_bindir}/socat
 
 %changelog
+* Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 1.7.1.3-1bismark3
+- Make setup quiet.
+
 * Thu Feb 02 2012 Stephen Woodrow <woodrow@gatech.edu> - 1.7.1.3-1bismark2
 - Add tcp_wrappers headers to BuildRequires.
 

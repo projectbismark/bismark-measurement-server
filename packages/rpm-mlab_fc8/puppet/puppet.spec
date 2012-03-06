@@ -18,7 +18,7 @@
 Summary: Network tool for managing many disparate systems
 Name: puppet
 Version: 2.7.9
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Apache License 2.0
 Group: System Environment/Base
 URL: http://puppetlabs.com/projects/puppet/
@@ -93,7 +93,7 @@ Requires: vim-common
 Vim support for editing Puppet files.
 
 %prep
-%setup
+%setup -q
 %patch0 -p1
 patch -s -p1 < conf/redhat/rundir-perms.patch
 
@@ -287,6 +287,9 @@ fi
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.7.9-3
+- Make setup quiet.
+
 * Mon Jan 30 2012 Stephen Woodrow <woodrow@gatech.edu> - 2.7.9-2
 - Package for bismark-mserver, removing selinux requirements.
 
