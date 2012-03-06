@@ -2,7 +2,16 @@ class bismark_mserver::mlab_fc8 {
     user { 'gt_bismark_unpriv' :
         ensure   => present,
         shell    => '/bin/bash',
+        home     => '/home/gt_bismark_unpriv',
         password => '!'  # lock the password
+    }
+
+    file { '/home/gt_bismark_unpriv' :
+        require => User['gt_bismark_unpriv'],
+        owner   => 'gt_bismark_unpriv',
+        group   => 'gt_bismark_unpriv',
+        mode    => 700,
+        ensure  => directory
     }
 
     file { '/etc/sudoers' :
@@ -25,6 +34,7 @@ class bismark_mserver::mlab_fc8 {
         command => '/usr/bin/yum clean metadata && /usr/bin/yum -y check-update',
         user    => root,
         group   => root,
+        returns => [0, 100]  # check-update returns 0 or 100 on success
     }
 
     package { 'bismark-mserver':
@@ -41,9 +51,14 @@ class bismark_mserver::mlab_fc8 {
 
     service { 'bismark-mserver' :
         require => [File['/etc/sudoers'], Package['bismark-mserver'], Service['crond']],
+        subscribe => Package['bismark-mserver'],  # temporary
         enable => true,
         ensure => running,
         hasstatus => false
+    }
+
+    cron { yum_checkupdate :  # temporary
+        ensure => absent
     }
 
     cron { puppet_agent :
