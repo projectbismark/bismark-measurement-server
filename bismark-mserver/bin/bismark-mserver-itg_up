@@ -8,21 +8,35 @@ set -o errexit
 # Load configuration
 . /etc/bismark-mserver.conf
 
-if [ "$ITG_UP_PORT" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
-    echo "Sorry, $0 can't bind to ports < 1024. Terminating."
-    exit 1
-fi
+start_itg() {
+    itg_pid=''
+    if [ "$ITG_UP_PORT" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
+        echo "Sorry, $0 can't bind to ports < 1024. Terminating."
+        exit 1
+    fi
 
-ITGRecv -Sp "$ITG_UP_PORT" >> /tmp/bismark-mserver-itg_up.log 2>&1 &
+    ITGRecv -Sp "$ITG_UP_PORT" >> /tmp/bismark-mserver-itg_up.log 2>&1 &
+    itg_pid="$!"
+}
+
+usage() {
+    echo "Usage: $0 [no-]echopid"
+    exit 1
+}
 
 if [ ! -z ${1:-} ]; then
     case "$1" in
     echopid)
-        echo $!
+        start_itg
+        echo "$itg_pid"
+        ;;
+    no-echopid)
+        start_itg
         ;;
     *)
-        echo "Usage: $0 [echopid]"
-        exit 1
+        usage
         ;;
     esac
+else
+    usage
 fi

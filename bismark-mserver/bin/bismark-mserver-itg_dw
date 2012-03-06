@@ -8,9 +8,9 @@ set -o errexit
 # Load configuration
 . /etc/bismark-mserver.conf
 
-start_socat()
-# $1 is port number, $2 is 'echopid'
-{
+start_socat() {
+# $1 is port number
+    socat_pid=''
     if [ "$1" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
         echo "Sorry, $0 can't bind to ports < 1024. Terminating."
         exit 1
@@ -18,59 +18,64 @@ start_socat()
 
     socat -4 -T $SOCAT_CHILD_TIMEOUT TCP-LISTEN:$1,fork,reuseaddr,tcpwrap \
             EXEC:"$0 exec",pipes > /dev/null 2>&1 &
-    if [ "$2" = 'echopid' ]; then
-        echo $!
-    fi
-    exit 0
+    socat_pid="$!"
 }
 
-if [ -z ${1:-} ]; then
-    start_socat $ITG_DW_PORT 'noechopid'
-fi
+usage() {
+    echo "Usage: $0 [no-]echopid"
+    exit 1
+}
 
-case "$1" in
-echopid)
-    start_socat $ITG_DW_PORT 'echopid'
-    ;;
-exec)
-    logfile='/tmp/bismark-mserver-itg_dw.log'
-    # Parse standard input piped from socat (and the remote router)
-    # and select measurement based on first word
-    read cmd firstarg nextargs
-    case $cmd in
-    send)
-        opt="$firstarg $nextargs"
-        if [ "$firstarg" = "-H" ]; then
-            id=$(echo $opt | md5sum | cut -c 1-10)
-            echo "$id start $(date +%s) ($opt)" >> $logfile
-            ITGSend $opt -a $SOCAT_PEERADDR 2>&1 | \
-                    awk '{ "date +%s" | getline date ; \
-                    print "'$id' " date " " $0 ; fflush() }' \
-                    >> $logfile &
-            pid=$(( $! - 1 ))  # TODO why is this - 1 ??
-            echo "$id pid $pid" >> $logfile
-        fi
-    ;;
-    log)
-        opt=$firstarg
-        echo $cmd - $opt >> $logfile
-        ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 \
-                $opt.bitrate 2> /dev/null
-        echo bitrate
-        awk '(NR > 1){ print $3 }' $opt.bitrate
-        echo jitter
-        awk '(NR > 1){ print $3 }' $opt.jitter
-        echo pktloss
-        awk '(NR > 1){ print $3 }' $opt.pktloss
-        rm $opt $opt.*
-    ;;
+if [ ! -z ${1:-} ]; then
+    case "$1" in
+    echopid)
+        start_socat $ITG_DW_PORT
+        echo "$socat_pid"
+        ;;
+    no-echopid)
+        start_socat $ITG_DW_PORT
+        ;;
+    exec)
+        logfile='/tmp/bismark-mserver-itg_dw.log'
+        # Parse standard input piped from socat (and the remote router)
+        # and select measurement based on first word
+        read cmd firstarg nextargs
+        case $cmd in
+        send)
+            opt="$firstarg $nextargs"
+            if [ "$firstarg" = "-H" ]; then
+                id=$(echo $opt | md5sum | cut -c 1-10)
+                echo "$id start $(date +%s) ($opt)" >> $logfile
+                ITGSend $opt -a $SOCAT_PEERADDR 2>&1 | \
+                        awk '{ "date +%s" | getline date ; \
+                        print "'$id' " date " " $0 ; fflush() }' \
+                        >> $logfile &
+                pid=$(( $! - 1 ))  # TODO why is this - 1 ??
+                echo "$id pid $pid" >> $logfile
+            fi
+        ;;
+        log)
+            opt=$firstarg
+            echo $cmd - $opt >> $logfile
+            ITGDec $opt -j 1000 $opt.jitter -p 1000 $opt.pktloss -b 1000 \
+                    $opt.bitrate 2> /dev/null
+            echo bitrate
+            awk '(NR > 1){ print $3 }' $opt.bitrate
+            echo jitter
+            awk '(NR > 1){ print $3 }' $opt.jitter
+            echo pktloss
+            awk '(NR > 1){ print $3 }' $opt.pktloss
+            rm $opt $opt.*
+        ;;
+        *)
+            exit 2
+            ;;
+        esac
+        ;;
     *)
-        exit 2;
+        usage
         ;;
     esac
-    ;;
-*)
-    echo "Usage: $0 [echopid]"
-    exit 1
-    ;;
-esac
+else
+    usage
+fi

@@ -8,16 +8,30 @@ set -o errexit
 # Load configuration
 . /etc/bismark-mserver.conf
 
-probeserver >> /tmp/bismark-mserver-probeserver.log 2>&1 &
+start_probeserver() {
+    probeserver_pid=''
+    probeserver >> /tmp/bismark-mserver-probeserver.log 2>&1 &
+    probeserver_pid="$!"
+}
+
+usage() {
+    echo "Usage: $0 [no-]echopid"
+    exit 1
+}
 
 if [ ! -z ${1:-} ]; then
     case "$1" in
     echopid)
-        echo $!
+        start_probeserver
+        echo "$probeserver_pid"
+        ;;
+    no-echopid)
+        start_probeserver
         ;;
     *)
-        echo "Usage: $0 [echopid]"
-        exit 1
+        usage
         ;;
     esac
+else
+    usage
 fi
