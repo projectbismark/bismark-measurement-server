@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
 Version: 0.1.7
-Release: 1%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: https://github.com/projectbismark/bismark-measurement-server
@@ -16,7 +16,7 @@ Requires: netperf = 2.4.5-1bismark3.fc8
 Requires: iperf = 2.0.4-1bismark2.fc8
 Requires: ditg = 2.8.0-0bismark3.rc1.fc8
 Requires: shaperprobe-server = 0.1-1bismark3.fc8
-Requires: socat = 1.7.1.3-1bismark2.fc8
+Requires: socat = 1.7.1.3-1bismark3.fc8
 # fedora-packaged dependencies
 Requires: traceroute
 Requires: iputils
@@ -35,6 +35,9 @@ Requires: python-simplejson
 
 Requires(post): chkconfig
 Requires(preun): chkconfig, initscripts
+
+# prevent rpmlint errors due to python compilation by brp-python-bytecompile
+%define __spec_install_post /usr/lib/rpm/redhat/brp-compress
 
 %description
 Sets up a BISmark measurement server capable of sourcing and sinking traffic
@@ -79,12 +82,20 @@ if [ $1 -eq 0 ]; then
     /sbin/chkconfig --del %{name}
 fi
 
+%postun
+if [ $1 -ge 1 ]; then
+  /sbin/service %{name} restart >/dev/null 2>&1
+fi
+
+
 %changelog
-* Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-1
+* Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-5
 - Add bismark-mserver-iperf_{tcp,udp} wrapper scripts.
-- Change %config files to %config(noreplace).
+- Change config-annotated files to config(noreplace) in spec.
 - Depend on patched ditg.
-- Heartbeat tries to include puppet $config_version.
+- Depend on updated socat release.
+- bismark-mserver-heartbeat tries to include puppet config_version.
+- Restart bismark-mserver service on package upgrade.
 * Mon Feb 20 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.6-1
 - Add bismark-mserver-hostsallow to download and construct a hosts.allow file.
 - Include default hosts.allow.bismark and hosts.deny.bismark files.
