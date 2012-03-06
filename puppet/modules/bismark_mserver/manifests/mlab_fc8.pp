@@ -62,7 +62,7 @@ class bismark_mserver::mlab_fc8 {
     }
 
     cron { puppet_agent :
-        command => '/bin/sleep $((($RANDOM*600)/32767)) && /usr/bin/puppet agent',
+        command => '/bin/sleep $((($RANDOM*1800)/32767)) && /usr/bin/puppet agent',
         ensure  => present,
         user    => root,
         hour    => [0, 6, 12, 18],
