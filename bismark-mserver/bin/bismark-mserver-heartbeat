@@ -24,9 +24,9 @@ public_ip=$(/sbin/ip addr show dev "$default_if" |
 # determine the hostname of this slice
 hostname="bismark.gt.$(hostname)"
 # determine bismark-mserver package version number
-pkg_version=$(rpm --query bismark-mserver \
-                  --queryformat %{VERSION}-%{RELEASE} 2> /dev/null \
-              || echo 'N/A')
+mserver_version=$(rpm --query bismark-mserver \
+                      --queryformat %{VERSION}-%{RELEASE} 2> /dev/null \
+              || echo '')
 # determine puppet config_version (git commit hash of repo HEAD)
 puppet_config_version=''
 attempts=0
@@ -42,14 +42,24 @@ do
     sleep 2
     attempts=$(($attempts+1))
 done
-if [ -z "$puppet_config_version" ]; then
-    puppet_config_version='N/A'
-fi
+
+# format variables in-place for JSON inclusion;
+# zero-length strings become JSON nulls
+json_vars="public_ip mserver_version puppet_config_version"
+for v in $json_vars
+do
+    eval "json_val=\"\${$v:-}\""
+    if [ ! -z "$json_val" ]; then
+        eval "$v=\"\\\"\$$v\\\"\""
+    else
+        eval "$v=\"null\""
+    fi
+done
 
 echo "{
-      \"ip\":                      \"$public_ip\",
-      \"bismark-mserver_version\": \"$pkg_version\",
-      \"puppet_config_version\":   \"$puppet_config_version\"
+      \"ip\":                      $public_ip,
+      \"bismark-mserver_version\": $mserver_version,
+      \"puppet_config_version\":   $puppet_config_version
       }" > $heartbeat_msg
 
 curl --request POST \
