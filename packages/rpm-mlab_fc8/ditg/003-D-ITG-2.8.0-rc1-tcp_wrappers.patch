@@ -1,7 +1,7 @@
-diff --git a/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp b/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp
-index 2dfaef7..806e21b 100644
---- a/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp
-+++ b/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp
+Index: src/ITGRecv/ITGRecv.cpp
+===================================================================
+--- src/ITGRecv/ITGRecv.cpp.orig
++++ src/ITGRecv/ITGRecv.cpp
 @@ -50,6 +50,12 @@
  #endif
  #endif
@@ -15,7 +15,7 @@ index 2dfaef7..806e21b 100644
  
  #ifdef MULTIPORT
  
-@@ -2240,14 +2246,16 @@ int main(int argc, char *argv[])
+@@ -2242,14 +2248,16 @@ int main(int argc, char *argv[])
  		
  
  #ifdef LINUX_OS
@@ -35,7 +35,7 @@ index 2dfaef7..806e21b 100644
  			
  			if (sockAddress)
  				freeaddrinfo(sockAddress);
-@@ -2326,11 +2334,55 @@ int main(int argc, char *argv[])
+@@ -2328,11 +2336,55 @@ int main(int argc, char *argv[])
  		
  
  		while (1) {
@@ -92,10 +92,10 @@ index 2dfaef7..806e21b 100644
  #ifdef WIN32
  #ifdef IPv6RECV
  			printf("*** New Socket IPv6 created for signaling ***\n");
-diff --git a/D-ITG-2.8.0-rc1/src/Makefile b/D-ITG-2.8.0-rc1/src/Makefile
-index 4290ee7..4e27e9f 100644
---- a/D-ITG-2.8.0-rc1/src/Makefile
-+++ b/D-ITG-2.8.0-rc1/src/Makefile
+Index: src/Makefile
+===================================================================
+--- src/Makefile.orig
++++ src/Makefile
 @@ -35,6 +35,12 @@ ifdef multiport
  	CXXOPT += -DMULTIPORT
  endif

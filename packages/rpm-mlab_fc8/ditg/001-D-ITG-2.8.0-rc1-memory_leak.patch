@@ -1,6 +1,6 @@
-diff -aur a/D-ITG-2.8.0-rc1/src/common/thread.cpp b/D-ITG-2.8.0-rc1/src/common/thread.cpp
---- a/D-ITG-2.8.0-rc1/src/common/thread.cpp	2011-08-07 07:27:49.000000000 -0400
-+++ b/D-ITG-2.8.0-rc1/src/common/thread.cpp	2012-03-05 14:27:22.680338561 -0500
+diff -aur src/common/thread.cpp src/common/thread.cpp
+--- src/common/thread.cpp
++++ src/common/thread.cpp
 @@ -43,10 +43,10 @@
  	int ret = 0;
  #ifdef WIN32
@@ -22,9 +22,9 @@ diff -aur a/D-ITG-2.8.0-rc1/src/common/thread.cpp b/D-ITG-2.8.0-rc1/src/common/t
      PRINTD(3,"createThread: Return value pthread_create (LINUX) %lu\n",(unsigned long int)idThread);
      PRINTD(3,"createThread: Return value createThread : %d\n",ret);
  #endif
-diff -aur a/D-ITG-2.8.0-rc1/src/common/thread.h b/D-ITG-2.8.0-rc1/src/common/thread.h
---- a/D-ITG-2.8.0-rc1/src/common/thread.h	2011-08-07 07:27:49.000000000 -0400
-+++ b/D-ITG-2.8.0-rc1/src/common/thread.h	2012-03-05 14:27:22.680338561 -0500
+diff -aur src/common/thread.h src/common/thread.h
+--- src/common/thread.h
++++ src/common/thread.h
 @@ -29,67 +29,69 @@
  
  
@@ -135,9 +135,9 @@ diff -aur a/D-ITG-2.8.0-rc1/src/common/thread.h b/D-ITG-2.8.0-rc1/src/common/thr
  #endif
  
  
-diff -aur a/D-ITG-2.8.0-rc1/src/ITGRecv/data.cpp b/D-ITG-2.8.0-rc1/src/ITGRecv/data.cpp
---- a/D-ITG-2.8.0-rc1/src/ITGRecv/data.cpp	2011-08-07 07:27:49.000000000 -0400
-+++ b/D-ITG-2.8.0-rc1/src/ITGRecv/data.cpp	2012-03-05 14:27:22.684338654 -0500
+diff -aur src/ITGRecv/data.cpp src/ITGRecv/data.cpp
+--- src/ITGRecv/data.cpp
++++ src/ITGRecv/data.cpp
 @@ -74,7 +74,7 @@
  	
  	unsigned char payload[MAX_PAYLOAD_SIZE];
@@ -428,9 +428,9 @@ diff -aur a/D-ITG-2.8.0-rc1/src/ITGRecv/data.cpp b/D-ITG-2.8.0-rc1/src/ITGRecv/d
  	return NULL;
  } 
  #endif
-diff -aur a/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp b/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp
---- a/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp	2011-08-07 07:27:49.000000000 -0400
-+++ b/D-ITG-2.8.0-rc1/src/ITGRecv/ITGRecv.cpp	2012-03-05 14:27:22.688338756 -0500
+diff -aur src/ITGRecv/ITGRecv.cpp src/ITGRecv/ITGRecv.cpp
+--- src/ITGRecv/ITGRecv.cpp
++++ src/ITGRecv/ITGRecv.cpp
 @@ -1640,9 +1640,10 @@
  
  			

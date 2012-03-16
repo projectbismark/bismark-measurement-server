@@ -11,10 +11,10 @@ Group: Applications/Internet
 URL: http://www.grid.unina.it/software/ITG
 
 Source: http://www.grid.unina.it/software/ITG/codice/D-ITG-2.8.0-rc1.tgz
-Patch0: patches/001-D-ITG-2.8.0-rc1-memory_leak.patch
-Patch1: patches/002-D-ITG-2.8.0-rc1-signalsock_timeout.patch
-Patch2: patches/003-D-ITG-2.8.0-rc1-tcp_wrappers.patch
-Patch3: patches/004-D-ITG-2.8.0-rc1-ITGRecv_unhandled_connection_close.patch
+Patch0: 001-D-ITG-2.8.0-rc1-memory_leak.patch
+Patch1: 002-D-ITG-2.8.0-rc1-signalsock_timeout.patch
+Patch2: 003-D-ITG-2.8.0-rc1-tcp_wrappers.patch
+Patch3: 004-D-ITG-2.8.0-rc1-ITGRecv_unhandled_connection_close.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: tcp_wrappers-devel
 
