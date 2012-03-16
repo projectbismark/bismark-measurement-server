@@ -92,11 +92,20 @@ def add_contentmd5(status, headers, out, conditional=False):
 @app.get('/mservers/')
 def get_all_mservers(db):
     c = db.execute('SELECT * from mservers;')
-    out = []
     rows = c.fetchall()
-    for row in rows:
-        out.append('/mservers/' + row['fqdn'])
-    return({'mservers': out})
+
+    try:
+        if 'text/html' in headers['accept']:
+            return template('all_mservers', mservers=rows)
+        elif 'application/json' in header['accept']:
+            out = []
+            for row in rows:
+                out.append('/mservers/' + row['fqdn'])
+            return({'mservers': out})
+    except KeyError:
+        pass
+    raise bottle.HTTPError(406)
+
 
 
 @app.get('/mservers/<mserver_fqdn>')
