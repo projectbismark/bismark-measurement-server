@@ -38,7 +38,7 @@
     </tr>
 % for server in mservers:
     <tr>
-        <td>{{server['fqdn']}}</td>
+        <td><a rel="mserver_detail" href="{{server['fqdn']}}">{{server['fqdn']}}</a></td>
         <td>{{server['ip']}}</td>
         <td>{{rel_time(server['last_seen'])}}</td>
         <td>{{server['version']}}</td>
