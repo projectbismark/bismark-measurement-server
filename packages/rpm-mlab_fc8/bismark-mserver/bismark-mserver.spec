@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
 Version: 0.1.7
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: https://github.com/projectbismark/bismark-measurement-server
@@ -14,7 +14,7 @@ BuildArch: noarch
 # bismark-packaged dependencies
 Requires: netperf = 2.4.5-1bismark3.fc8
 Requires: iperf = 2.0.4-1bismark2.fc8
-Requires: ditg = 2.8.0-0bismark3.rc1.fc8
+Requires: ditg = 2.8.0-0bismark4.rc1.fc8
 Requires: shaperprobe-server = 0.1-1bismark3.fc8
 Requires: socat = 1.7.1.3-1bismark3.fc8
 # fedora-packaged dependencies
@@ -89,6 +89,8 @@ fi
 
 
 %changelog
+* Fri Mar 16 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-6
+- Update ditg version to patch infinite loop on connection close bug.
 * Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-5
 - Add bismark-mserver-iperf_{tcp,udp} wrapper scripts.
 - Change config-annotated files to config(noreplace) in spec.
