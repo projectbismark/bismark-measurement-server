@@ -87,17 +87,20 @@ def add_contentmd5(status, headers, out, conditional=False):
 #def identifier():
 #    return {'measurement_servers': '/mservers'}
 
+@app.get('/style.css')
+def get_stylesheet():
+    return bottle.static_file('style.css', './views/')
 
 @app.get('/mservers')
 @app.get('/mservers/')
 def get_all_mservers(db):
-    c = db.execute('SELECT * from mservers;')
+    c = db.execute('SELECT * from mservers ORDER BY last_seen DESC;')
     rows = c.fetchall()
 
     try:
-        if 'text/html' in headers['accept']:
-            return template('all_mservers', mservers=rows)
-        elif 'application/json' in header['accept']:
+        if 'text/html' in bottle.request.headers['accept']:
+            return bottle.template('all_mservers', mservers=rows)
+        elif 'application/json' in bottle.request.header['accept']:
             out = []
             for row in rows:
                 out.append('/mservers/' + row['fqdn'])

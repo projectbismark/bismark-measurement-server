@@ -1,0 +1,28 @@
+tr.row-even
+{
+    background-color: #fff;
+}
+
+tr.row-odd
+{
+    background-color: #ddd;
+}
+
+td.fqdn, td.pversion, td.ip
+{
+    font: 9pt andale mono, courier, monospace;
+    padding: 0 5px 0 5px;
+}
+
+td.lastseen, td.version {
+    text-align: center;
+}
+
+td, th {
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #999;
+}
+
+table {
+    border-collapse:collapse
+}
