@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.7
-Release: 6%{?dist}
+Version: 0.1.8
+Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: https://github.com/projectbismark/bismark-measurement-server
@@ -89,6 +89,9 @@ fi
 
 
 %changelog
+* Tue Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.8-1
+- Update bismark-mserver to more appropriately name DITG-related scripts and
+  variables
 * Fri Mar 16 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-6
 - Update ditg version to patch infinite loop on connection close bug.
 * Mon Mar 05 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.7-5

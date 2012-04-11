@@ -10,12 +10,12 @@ set -o errexit
 
 start_itg() {
     itg_pid=''
-    if [ "$ITG_UP_PORT" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
+    if [ "$ITGRECV_PORT" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
         echo "Sorry, $0 can't bind to ports < 1024. Terminating."
         exit 1
     fi
 
-    ITGRecv -Sp "$ITG_UP_PORT" >> /tmp/bismark-mserver-itg_up.log 2>&1 &
+    ITGRecv -Sp "$ITGRECV_PORT" >> /tmp/bismark-mserver-itgrecv.log 2>&1 &
     itg_pid="$!"
 }
 

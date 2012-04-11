@@ -29,14 +29,14 @@ usage() {
 if [ ! -z ${1:-} ]; then
     case "$1" in
     echopid)
-        start_socat $ITG_DW_PORT
+        start_socat $DITG_PORT
         echo "$socat_pid"
         ;;
     no-echopid)
-        start_socat $ITG_DW_PORT
+        start_socat $DITG_PORT
         ;;
     exec)
-        logfile='/tmp/bismark-mserver-itg_dw.log'
+        logfile='/tmp/bismark-mserver-ditg.log'
         # Parse standard input piped from socat (and the remote router)
         # and select measurement based on first word
         read cmd firstarg nextargs
