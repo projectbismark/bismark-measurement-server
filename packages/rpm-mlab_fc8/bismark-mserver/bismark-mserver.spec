@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
 Version: 0.1.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: https://github.com/projectbismark/bismark-measurement-server
@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildArch: noarch
 
 # bismark-packaged dependencies
-Requires: netperf = 2.4.5-1bismark3.fc8
+Requires: netperf = 2.4.5-1bismark4.fc8
 Requires: iperf = 2.0.4-1bismark2.fc8
 Requires: ditg = 2.8.0-0bismark4.rc1.fc8
 Requires: shaperprobe-server = 0.1-1bismark3.fc8
@@ -89,6 +89,8 @@ fi
 
 
 %changelog
+* Tue Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.8-2
+- Patch netperf to increase PAD_TIME to avoid measurement timeouts.
 * Tue Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.8-1
 - Update bismark-mserver to more appropriately name DITG-related scripts and
   variables
