@@ -16,6 +16,7 @@ daemons="bismark-mserver-rtraceroute \
          bismark-mserver-ditg \
          bismark-mserver-itgrecv \
          bismark-mserver-shaperprobe \
+         bismark-mserver-rping \
          bismark-mserver-netperf"
 
 if [ ! -z ${1:-} ]; then
