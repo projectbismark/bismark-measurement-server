@@ -1,0 +1,7 @@
+netserver         : ALL
+iperf             : ALL
+ITGRecv           : ALL
+probeserver       : ALL
+socat-ditg        : ALL
+socat-rtraceroute : ALL
+socat-rping       : 143.215.131.215, dp4.gtnoise.net, 130.207.97.243, univers.noise.gatech.edu

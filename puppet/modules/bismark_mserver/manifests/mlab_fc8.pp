@@ -14,6 +14,14 @@ class bismark_mserver::mlab_fc8 {
         ensure  => directory
     }
 
+    file { '/etc/hosts.allow.bismark' :
+        owner  => root,
+        group  => root,
+        mode   => 644,
+        ensure => file,
+        source => 'puppet:///modules/bismark_mserver/etc/hosts.allow.bismark',
+    }
+
     file { '/etc/sudoers' :
         require => User['gt_bismark_unpriv'],
         alias  => sudoers,

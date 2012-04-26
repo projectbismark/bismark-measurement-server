@@ -173,7 +173,7 @@ def get_mserver_hostsallow_json(db, mserver_fqdn):
     if (not fqdn_matches_remote_addr(mserver_fqdn) or
             not fqdn_authorized(db, mserver_fqdn)):
         raise bottle.HTTPError(401, "not authorized")
-    return({'hosts.allow' : {'ALL' : 'ALL'}})
+    return( {'hosts.allow' : {} })
 
 
 ##########################
