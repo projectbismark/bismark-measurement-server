@@ -1,0 +1,74 @@
+#!/bin/sh
+
+# bismark-mserver reverse ping
+
+set -o nounset
+set -o errexit
+
+# Load configuration
+. /etc/bismark-mserver.conf
+
+start_socat() {
+# $1 is port number
+    socat_pid=''
+    if [ "$1" -lt 1024 ] && [ "$(id -ru)" -ne 0 ]; then
+        echo "Sorry, $0 can't bind to ports < 1024. Terminating."
+        exit 1
+    fi
+
+    socat -4 -T $SOCAT_CHILD_TIMEOUT TCP-LISTEN:$1,fork,reuseaddr,tcpwrap \
+            EXEC:"$0 exec",pipes > /dev/null 2>&1 &
+    socat_pid="$!"
+}
+
+usage() {
+    echo "Usage: $0 [no-]echopid"
+    exit 1
+}
+
+if [ ! -z ${1:-} ]; then
+    case "$1" in
+    echopid)
+        start_socat $RPING_PORT
+        echo "$socat_pid"
+        ;;
+    no-echopid)
+        start_socat $RPING_PORT
+        ;;
+    exec)
+        # Parse standard input piped from socat (and the remote router)
+        # and select traceroute type based on first word
+        read cmd target rest
+        case $cmd in
+        ping)
+            # validate IP address
+            if ! $(echo "$target" | grep -E -x -q '([0-9]+\.){3}[0-9]+'); then
+                echo "Malformed IP address '$target'. Terminating."
+                exit 1
+            fi
+            target_parts=$(echo "$target" | tr '.' ' ')
+            for part in $target_parts; do
+                if [ "$part" -lt 0 ] || [ "$part" -gt 255 ]; then
+                    echo "Malformed IP address '$target'. Terminating."
+                    exit 1
+                fi
+            done
+            if [ "${rest:-}" = '-q' ]; then
+                ping -q -c $RPING_COUNT $target
+            else
+                ping -c $RPING_COUNT $target
+            fi
+            ;;
+        *)
+            exit 2
+            ;;
+        esac
+        ;;
+    *)
+        usage
+        ;;
+    esac
+else
+    usage
+fi
+
