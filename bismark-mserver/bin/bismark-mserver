@@ -78,6 +78,20 @@ stop)
             rm -f $pidfile
         fi
     done
+
+    # handle leftovers (i.e. changed daemon names, etc.)
+    for pidfile in /var/run/bismark-mserver-*.pid
+    do
+        if [ -e "$pidfile" ]; then
+            pid=$(cat $pidfile)
+            procdir="/proc/$pid"
+            if [ -e $procdir -a -d $procdir ]; then
+                kill -TERM "$pid" || true      # kill parent
+            fi
+            pkill -TERM -P "$pid" || true      # kill any orphan children
+            rm -f $pidfile
+        fi
+    done
     ;;
 
 *)
