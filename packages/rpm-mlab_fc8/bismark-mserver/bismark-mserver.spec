@@ -1,7 +1,7 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
 Version: 0.1.9
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group: Applications/Internet
 URL: https://github.com/projectbismark/bismark-measurement-server
@@ -89,7 +89,7 @@ fi
 
 
 %changelog
-* Tue Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.9-1
+* Tue Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.9-2
 - Add bismark-mserver-rping to perform latency measurements to BISmark devices
   not capable of performing their own mserver latency measurments.
 * Tue Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.8-2
