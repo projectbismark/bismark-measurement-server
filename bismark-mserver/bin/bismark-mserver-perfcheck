@@ -5,14 +5,21 @@
 set -o nounset
 set -o errexit
 
-serverlist=$(curl --header 'Accept: application/json' -4 -s http://mserver-mgmt.projectbismark.net:8080/mservers)
+# Load configuration
+. /etc/bismark-mserver.conf
+
+# only proceed if actually started via initscript
+if [ ! -f $MSERVER_LOCKFILE ]; then
+    exit 0
+fi
+
+serverlist=$(curl --header 'Accept: application/json' -4 -s "$MGMT_SERVER:$MGMT_PORT/mservers")
 
 mservers=$(echo $serverlist | python -c "import json, sys; [sys.stdout.write(elem['fqdn'] + ' ') for elem in json.loads(sys.stdin.read())['mservers']]")
 
 mserver_performance="/tmp/bismark_mserver_perfcheck" #request file
 mserver_report="/tmp/mserver_report" #response file
 
-. /etc/bismark-mserver.conf
 hostname="bismark.gt.$(hostname)"
 #hostname=""
 
@@ -59,7 +66,7 @@ echo $final >$mserver_performance
 curl --request POST \
      --header 'Content-Type: application/json' \
      --upload-file $mserver_performance \
-     -D $mserver_report -4 -s "http://mserver-mgmt.projectbismark.net:8080/mserver_performance"
+     -D $mserver_report -4 -s "$MGMT_SERVER:$MGMT_PORT/mserver_performance"
 
 rm $mserver_performance
 rm $mserver_report
