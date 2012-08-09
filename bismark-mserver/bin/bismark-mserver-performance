@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# Perform and upload performance measurements of throughput, jitter, latency, and loss between measurement servers
+
+set -o nounset
+set -o errexit
+
+serverlist=$(curl --header 'Accept: application/json' -4 -s http://mserver-mgmt.projectbismark.net:8080/mservers)
+
+mservers=$(echo $serverlist | python -c "import json, sys; [sys.stdout.write(elem['fqdn'] + ' ') for elem in json.loads(sys.stdin.read())['mservers']]")
+
+mserver_performance="/tmp/bismark_mserver_performance" #request file
+mserver_report="/tmp/mserver_report" #response file
+
+. /etc/bismark-mserver.conf
+hostname="bismark.gt.$(hostname)"
+#hostname=""
+
+a=0
+success=0
+for server in ${mservers[*]}
+do
+	latency=$(ping -c 3 $server | tac | head -n 1 | tr '/' '\n' | egrep "[0-9]+(\.[0-9]*)" | awk 'NR==2')
+	if ! echo $latency | egrep -q "[0-9]+(\.[0-9]*)" ; then
+		success=1 #mserver unreachable
+	else
+		throughput=$(iperf -c $server -f k | awk '{print $7}' | tac | head -n 1)
+		udp=$(iperf -c $server -u)
+		jitter=$(echo $udp | tr ' ' '\n' | egrep "^[0-9]\.[0-9]{3}$" | tac | head -n 1)
+		if ! echo $jitter | egrep -q "^[0-9]\.[0-9]{3}$" ; then
+			success=1 #mserver connection refused
+		else
+			loss=$(echo $udp | tr ' ' '\n' | egrep "\(?[0-9]?+(?:\.[0-9]*)?%\)" | tr -d "(%)")
+		fi
+	fi
+	time=$(date "+%Y-%m-%d %H:%M:%S")
+
+	#to json
+	if [ $success = "0" ] ; then
+		packets[$a]="{\"fqdn_from\":\"$hostname\" \"fqdn_to\":\"$server\" \"utcdate\":\"$time\" \"throughput\":$throughput \"jitter\":$jitter \"loss\":$loss \"latency\":$latency \"success\":true}"
+	else
+		packets[$a]="{\"fqdn_from\":\"$hostname\" \"fqdn_to\":\"$server\" \"utcdate\":\"$time\" \"success\":false}"
+	fi
+
+	a=$(expr $a + 1)
+	success=0
+done
+
+data="["
+for packet in ${packets[*]}
+do
+	data="$data$packet, "
+done
+
+final=$(echo $data | sed 's/\([-][0-9][0-9]\),/\1/g' | sed 's/.$/]/')
+
+echo $final >$mserver_performance
+
+curl --request POST \
+     --header 'Content-Type: application/json' \
+     --upload-file $mserver_performance \
+     -D $mserver_report -4 -s "http://mserver-mgmt.projectbismark.net:8080/mserver_performance"
+
+rm $mserver_performance
+rm $mserver_report
