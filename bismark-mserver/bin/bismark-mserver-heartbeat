@@ -65,7 +65,7 @@ echo "{
 curl --request POST \
      --upload-file $heartbeat_msg \
      --header 'Content-Type: application/json' \
-     -4 -s "$HEARTBEAT_SERVER:$HEARTBEAT_PORT/mservers/$hostname"
+     -4 -s "$MGMT_SERVER:$MGMT_PORT/mservers/$hostname"
 
 rm $heartbeat_msg
 
