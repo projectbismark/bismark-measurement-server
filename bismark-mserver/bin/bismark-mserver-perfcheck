@@ -9,7 +9,7 @@ serverlist=$(curl --header 'Accept: application/json' -4 -s http://mserver-mgmt.
 
 mservers=$(echo $serverlist | python -c "import json, sys; [sys.stdout.write(elem['fqdn'] + ' ') for elem in json.loads(sys.stdin.read())['mservers']]")
 
-mserver_performance="/tmp/bismark_mserver_performance" #request file
+mserver_performance="/tmp/bismark_mserver_perfcheck" #request file
 mserver_report="/tmp/mserver_report" #response file
 
 . /etc/bismark-mserver.conf
