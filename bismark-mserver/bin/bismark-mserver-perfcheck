@@ -13,15 +13,20 @@ if [ ! -f $MSERVER_LOCKFILE ]; then
     exit 0
 fi
 
+hostname="bismark.gt.$(hostname)"
+#hostname=""
+
+# test only on mlab3.atl01 for now
+if [ ! "$hostname" = 'bismark.gt.mlab3.atl01.measurement-lab.org' ]; then
+    exit 0
+fi
+
 serverlist=$(curl --header 'Accept: application/json' -4 -s "$MGMT_SERVER:$MGMT_PORT/mservers")
 
 mservers=$(echo $serverlist | python -c "import json, sys; [sys.stdout.write(elem['fqdn'] + ' ') for elem in json.loads(sys.stdin.read())['mservers']]")
 
 mserver_performance="/tmp/bismark_mserver_perfcheck" #request file
 mserver_report="/tmp/mserver_report" #response file
-
-hostname="bismark.gt.$(hostname)"
-#hostname=""
 
 a=0
 success=0
