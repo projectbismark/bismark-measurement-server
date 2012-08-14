@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.10
+Version: 0.1.11
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -89,6 +89,8 @@ fi
 
 
 %changelog
+* Tue Aug 14 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.11-1
+- Minor changes in preparation for perfcheck deployment.
 * Thu Aug 09 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.10-1
 - Add bismark-mserver-perfcheck to perform performance measurements to other
   measurement servers.
