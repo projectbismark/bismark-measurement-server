@@ -13,6 +13,10 @@ if [ ! -f $MSERVER_LOCKFILE ]; then
     exit 0
 fi
 
+# random sleep up to one hour to splay measurements across servers
+random=$(hexdump -n 2 -e '/2 "%u"' /dev/urandom)
+/bin/sleep $((($random*3600)/65535))
+
 hostname="bismark.gt.$(hostname)"
 #hostname=""
 
