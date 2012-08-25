@@ -61,10 +61,7 @@ class bismark_mserver::mlab_fc8 {
         require => [File['/etc/sudoers'], Package['bismark-mserver'], Service['crond']],
         subscribe => Package['bismark-mserver'],  # temporary
         enable => true,
-        ensure => $hostname ? {
-            /(svg01|vie01)/ => stopped,
-            default         => running,
-        },
+        ensure => running,
         hasstatus => false
     }
 
