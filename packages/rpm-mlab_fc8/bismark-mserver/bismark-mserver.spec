@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.12
+Version: 0.1.13
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
