@@ -1,0 +1,70 @@
+diff --git a/netperf-2.4.5/src/netserver.c b/netperf-2.4.5/src/netserver.c
+index 1170564..ef8f70e 100644
+--- a/netperf-2.4.5/src/netserver.c
++++ b/netperf-2.4.5/src/netserver.c
+@@ -140,6 +140,13 @@ char	netserver_id[]="\
+ 
+ #include "netsh.h"
+ 
++#define TCP_WRAPPERS /* this should be done with autotools */
++
++#ifdef TCP_WRAPPERS
++#include "tcpd.h"
++#define NI_LEN 256
++#endif
++
+ #ifndef DEBUG_LOG_FILE
+ #ifndef WIN32
+ #define DEBUG_LOG_FILE "/tmp/netperf.debug"
+@@ -703,6 +710,51 @@ set_up_server(char hostname[], char port[], int af)
+ 	      printf("server_control: accept failed errno %d\n",errno);
+ 	      exit(1);
+ 	    }
++
++#ifdef TCP_WRAPPERS
++	int nierror = 0;
++	char c_addr[NI_LEN], c_name[NI_LEN];
++	char *progname = (char *)malloc(strlen(program) + 1);
++	char *progbase = NULL;
++
++	/* set up severity variables for libwrap */
++	allow_severity = 0;
++	deny_severity = 0;
++
++	/* set up program name without path elements for hosts_ctl check */
++	strcpy(progname, program);
++	progbase = basename(progname);
++
++	/* get client name and IP address */
++	if(nierror = getnameinfo((struct sockaddr *)&peeraddr, peeraddr_len,
++		&c_addr, NI_LEN, NULL, NULL, NI_NUMERICHOST))
++	{
++		printf("tcp_wrappers: getnameinfo failed: %s\n",
++		       gai_strerror(nierror));
++		exit(1);
++	}
++	if(getnameinfo((struct sockaddr *)&peeraddr, peeraddr_len,
++		&c_name, NI_LEN, NULL, NULL, NI_NAMEREQD))
++	{
++		c_name[0] = '\0';
++	}
++
++	/* hosts_ctl returns 0 if access is denied */
++	if(!hosts_ctl(progbase,
++		      c_name[0] == '\0' ? STRING_UNKNOWN : c_name,
++		      c_addr,
++		      STRING_UNKNOWN))
++	{
++		close(server_sock);
++		free(progname);
++		continue;
++	}
++	else
++	{
++		free(progname);
++	}
++#endif
++
+ #if defined(MPE) || defined(__VMS) || defined(VMWARE_UW) || defined(MSDOS)
+ 	  /*
+ 	   * Since we cannot fork this process , we cant fire any threads

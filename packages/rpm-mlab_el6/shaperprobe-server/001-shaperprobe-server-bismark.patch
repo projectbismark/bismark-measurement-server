@@ -1,0 +1,199 @@
+diff --git a/spserver/measflow.c b/spserver/measflow.c
+index 8223e60..863f1b7 100644
+--- a/spserver/measflow.c
++++ b/spserver/measflow.c
+@@ -174,7 +174,7 @@ int mflowReceiver(int tcpsock, int udpsock, double *recvrate, FILE *fp)
+ 	double sendtstamp = 0;
+ 	int ULSZ = sizeof(unsigned long);
+ 
+-	fprintf(fp, "### MEAS ###\n");
++	//fprintf(fp, "### MEAS ###\n");
+ 
+ 	ret = readwrapper(tcpsock, (char *)&startpkt,
+ 			sizeof(struct _mflowstart));
+@@ -245,7 +245,7 @@ int mflowReceiver(int tcpsock, int udpsock, double *recvrate, FILE *fp)
+ 			sendtstamp = ntohl(*(unsigned long *)((char *)buf+ULSZ));
+ 			sendtstamp += ntohl(*(unsigned long *)((char *)buf+2*ULSZ))*1e-6;
+ 
+-			fprintf(fp, "%f %f %ld %d\n", sendtstamp, ts.tv_sec + ts.tv_usec*1e-6, seq, MEAS);
++			//fprintf(fp, "%f %f %ld %d\n", sendtstamp, ts.tv_sec + ts.tv_usec*1e-6, seq, MEAS);
+ 		}
+ 
+ 		nrecvd++;
+diff --git a/spserver/probeserver.c b/spserver/probeserver.c
+index 8b58b0d..94fb9d3 100644
+--- a/spserver/probeserver.c
++++ b/spserver/probeserver.c
+@@ -258,7 +258,7 @@ int main(int argc, char *argv[], char **env)
+ 	char tracefile[256], filename[256];
+ 	struct timeval tv;
+ 	struct sockaddr_in from;
+-	FILE *fp;
++	FILE *fp=0;
+ 	extern double TB_RATE_AVG_INTERVAL;
+ 	int clientversion = 0;
+ 
+@@ -278,7 +278,7 @@ while(1)
+ 
+ 	tcpclientsock = handle_clients(tcpsock, udpsockcap);
+ 	CHKRET(tcpclientsock);
+-	close(tcpsock);
++	//close(tcpsock);
+ 
+ 	begintimer();
+ 
+@@ -290,8 +290,8 @@ while(1)
+ 
+ 	printf("\nEstimating capacity:\n");
+ 
+-	fp = openLog(filename, inet_ntoa(saddr.sin_addr), tv); //assume this opens a fp
+-	fprintf(fp, "sleep time resolution: %.2f ms.\n", sleepRes*1000);
++	//fp = openLog(filename, inet_ntoa(saddr.sin_addr), tv); //assume this opens a fp
++	//fprintf(fp, "sleep time resolution: %.2f ms.\n", sleepRes*1000);
+ 
+ 	CHKRET(preprocess_newclient(tcpclientsock, udpsockcap, &clientversion,
+ 				&upcap, &downcap, &from, tracefile, fp));
+@@ -305,9 +305,9 @@ while(1)
+ 	printf("recvrates: up %f, down %f Kbps\n", measupcap, measdowncap);
+ 	upcap = measupcap; downcap = measdowncap;
+ 
+-	fprintf(fp, "upstream capacity: %.2f Kbps.\n", upcap);
+-	fprintf(fp, "downstream capacity: %.2f Kbps.\n", downcap);
+-	fprintf(fp, "### UPSTREAM ###\n");
++	//fprintf(fp, "upstream capacity: %.2f Kbps.\n", upcap);
++	//fprintf(fp, "downstream capacity: %.2f Kbps.\n", downcap);
++	//fprintf(fp, "### UPSTREAM ###\n");
+ 	printf("upstream capacity: %.2f Kbps.\n", upcap);
+ 	printf("downstream capacity: %.2f Kbps.\n", downcap);
+ 	if(upcap > 100000) { upcap = 95000; } //else { upcap *= 0.95; }
+@@ -327,16 +327,16 @@ while(1)
+ //	if(clientversion > 1) //backwards-compatibility
+ //	mflowSender(tcpclientsock, udpsockcap, &from, (tbresult == 1) ? tbrate : downcap/2.0, sleepRes);
+ 	printShaperResult(tbresult, tbmindepth, tbmaxdepth, tbrate, 1, fp);
+-	recvData(tcpclientsock, fp, 1 /*0 up 1 down*/);
++//	recvData(tcpclientsock, fp, 1 /*0 up 1 down*/);
+ 
+-	fclose(fp);
++	//fclose(fp);
+ 	close(udpsockcap);
+ 	close(tcpclientsock);
+ 
+-	break;
++//	break;
+ }
+ 
+-	execl("/bin/bzip2", "/bin/bzip2", filename, NULL);
++//	execl("/bin/bzip2", "/bin/bzip2", filename, NULL);
+ 
+ 	return(0);
+ }
+diff --git a/spserver/tbdetect.c b/spserver/tbdetect.c
+index 803dcea..20cc625 100644
+--- a/spserver/tbdetect.c
++++ b/spserver/tbdetect.c
+@@ -177,7 +177,7 @@ int tbdetectSender(int tcpsock, int udpsock, struct sockaddr_in *from,
+ 		if(bwperiod > bp) {bwperiod = bp; trainlength = c;}
+ 	}
+ 	gap *= trainlength;
+-	fprintf(fp, "server trainlength: %d\n", trainlength);
++	//fprintf(fp, "server trainlength: %d\n", trainlength);
+ 
+ 	gettimeofday(&startts, NULL); start0 = startts.tv_sec+startts.tv_usec*1e-6;
+ 	gapts.tv_sec = floor(gap);
+@@ -573,7 +573,7 @@ inline int tbLogRateLoss(double sendtstamp, double timestamp, int size,
+ 	{
+ 		rateEstimate = (*bucketbytes) * 0.008/TB_RATE_LOG_INTERVAL;
+ 
+-		fprintf(fp, "%f %f %ld %ld\n", timestamp, rateEstimate, 
++		//fprintf(fp, "%f %f %ld %ld\n", timestamp, rateEstimate, 
+ 						*totrecvd, maxseq - *lastseq + 1);
+ 
+ 		*bucketbytes = size;
+@@ -587,7 +587,7 @@ inline int tbLogRateLoss(double sendtstamp, double timestamp, int size,
+ 		*bucketbytes += size;
+ 	}
+ #else
+-	fprintf(fp, "%f %f %ld %d\n", sendtstamp, timestamp, seq, TB);
++	//fprintf(fp, "%f %f %ld %d\n", sendtstamp, timestamp, seq, TB);
+ #endif
+ 
+ 	return 0;
+@@ -628,7 +628,7 @@ int tbdetectReceiver(int tcpsock, int udpsock,
+ 	double sendtstamp = 0;
+ 	int ULSZ = sizeof(unsigned long);
+ 
+-	fprintf(fp, "### DATA ###\n");
++	//fprintf(fp, "### DATA ###\n");
+ 
+ 	ret = readwrapper(tcpsock, (char *)&startpkt,
+ 			sizeof(struct _tbdetectstart));
+@@ -738,9 +738,9 @@ int tbdetectReceiver(int tcpsock, int udpsock,
+ 				if(contHiLossWnds > TB_NPOSTERIOR+2 ||
+ 				   contLoLossWnds > TB_NTOTLOSSPOSTERIOR)
+ 				{
+-					fprintf(fp, 
+-						"aborting due to high loss rate: Hi:%ld Lo:%ld\n", 
+-						contHiLossWnds, contLoLossWnds);
++					//fprintf(fp, 
++						//"aborting due to high loss rate: Hi:%ld Lo:%ld\n", 
++						//contHiLossWnds, contLoLossWnds);
+ 					*abortflag = 1;
+ 					endpkt.abortflag = htonl(1);
+ 					//for(ret = 0; ret < index; ret++)
+@@ -814,23 +814,23 @@ int tbdetectReceiver(int tcpsock, int udpsock,
+ void printShaperResult(unsigned int tbresult, unsigned int tbmindepth,
+ 			unsigned int tbmaxdepth, double tbrate, int dir, FILE *fp)
+ {
+-	if(dir == 0)
+-	fprintf(fp, "Upstream: ");
+-	else
+-	fprintf(fp, "Downstream: ");
++	//if(dir == 0)
++	//fprintf(fp, "Upstream: ");
++	//else
++	//fprintf(fp, "Downstream: ");
+ 
+ 	if(tbresult == 0)
+ 	{
+-		fprintf(fp, "No shaper detected.\n");
+-		fprintf(fp, "Median received rate: %d Kbps.\n", (int)tbrate);
++		//fprintf(fp, "No shaper detected.\n");
++		//fprintf(fp, "Median received rate: %d Kbps.\n", (int)tbrate);
+ 		return;
+ 	}
+ 
+-	if(tbmindepth == tbmaxdepth)
+-	fprintf(fp, "Burst size: %d KB; ", tbmindepth);
+-	else
+-	fprintf(fp, "Burst size: %d-%d KB; ", tbmindepth, tbmaxdepth);
++	//if(tbmindepth == tbmaxdepth)
++	//fprintf(fp, "Burst size: %d KB; ", tbmindepth);
++	//else
++	//fprintf(fp, "Burst size: %d-%d KB; ", tbmindepth, tbmaxdepth);
+ 
+-	fprintf(fp, "Shaping rate: %d Kbps.\n", (int)tbrate);
++	//fprintf(fp, "Shaping rate: %d Kbps.\n", (int)tbrate);
+ }
+ 
+diff --git a/spserver/tcpserver.c b/spserver/tcpserver.c
+index d863a2f..31e4c0c 100644
+--- a/spserver/tcpserver.c
++++ b/spserver/tcpserver.c
+@@ -460,7 +460,7 @@ double capacityEstimation(int tcpsock, int udpsock0, struct sockaddr_in *from, F
+ 			}
+ 		}
+ 
+-		fprintf(fp, "### TRAIN ###\n");
++		/*fprintf(fp, "### TRAIN ###\n");
+ 		for(count = 0; count < TRAIN_LENGTH; count++)
+ 		{
+ 			fprintf(fp, "%f %f %d\n", 
+@@ -468,7 +468,7 @@ double capacityEstimation(int tcpsock, int udpsock0, struct sockaddr_in *from, F
+ 					trecv[count].tv_sec+trecv[count].tv_usec*1e-6,
+ 					seq[count]);
+ 		}
+-		fprintf(fp, "\n");
++		fprintf(fp, "\n");*/
+ 
+ 		gap = timeval_diff(tend, tstart); //s
+ 		if(sz != -1 && gap != 0)

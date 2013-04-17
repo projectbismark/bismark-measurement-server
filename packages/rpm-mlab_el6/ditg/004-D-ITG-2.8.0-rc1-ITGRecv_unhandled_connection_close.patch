@@ -1,0 +1,23 @@
+Index: src/ITGRecv/ITGRecv.cpp
+===================================================================
+--- src/ITGRecv/ITGRecv.cpp.orig
++++ src/ITGRecv/ITGRecv.cpp
+@@ -469,9 +469,15 @@ void *signalManager(void *param)
+ 
+ 	
+ 	do {
+-		if (recv(newSockSignaling, (char *) &buffer, sizeof(BYTE), 0) < 0)
+-			reportErrorAndExit("signalManager", "recv - connect",
+-			    "Cannot receive newSockSignaling data");
++		int r = 0;
++
++		r = recv(newSockSignaling, (char *) &buffer, sizeof(BYTE), 0);
++		if (r < 0) {
++			reportErrorAndExit("signalManager", "recv - connect", "Cannot receive newSockSignaling data");
++		} else if (r == 0) {
++			printf("Connection aborted from the sender\n");
++			exitThread();
++		}
+ 		
+ 	} while (*(BYTE *) buffer != TSP_CONNECT);
+ 	PRINTD(1,"signalManager: Received TSP_CONNECT(1) message\n");
