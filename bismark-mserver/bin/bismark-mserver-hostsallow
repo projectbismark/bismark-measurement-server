@@ -2,6 +2,10 @@
 
 # Download list of allowed hosts and construct hosts.allow file
 
+cp /etc/hosts.allow.bismark /etc/hosts.allow
+cp /etc/hosts.deny.bismark /etc/hosts.deny
+exit
+
 set -o nounset
 set -o errexit
 
