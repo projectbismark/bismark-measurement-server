@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.12
+Version: 0.1.13
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -17,6 +17,7 @@ Requires: iperf = 2.0.4-1bismark2.fc8
 Requires: ditg = 2.8.0-0bismark4.rc1.fc8
 Requires: shaperprobe-server = 0.1-1bismark3.fc8
 Requires: socat = 1.7.1.3-1bismark3.fc8
+Requires: paris-traceroute = 0.92-3.fc8
 # fedora-packaged dependencies
 Requires: traceroute
 Requires: iputils
