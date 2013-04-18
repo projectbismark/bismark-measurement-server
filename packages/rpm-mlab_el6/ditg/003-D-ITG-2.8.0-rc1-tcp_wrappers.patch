@@ -1,0 +1,132 @@
+Index: src/ITGRecv/ITGRecv.cpp
+===================================================================
+--- src/ITGRecv/ITGRecv.cpp.orig
++++ src/ITGRecv/ITGRecv.cpp
+@@ -50,6 +50,12 @@
+ #endif
+ #endif
+ 
++#define TCP_WRAPPERS /* this should be done with autotools */
++
++#ifdef TCP_WRAPPERS
++#include "tcpd.h"
++#define NI_LEN 256
++#endif
+ 
+ #ifdef MULTIPORT
+ 
+@@ -2242,14 +2248,16 @@ int main(int argc, char *argv[])
+ 		
+ 
+ #ifdef LINUX_OS
+-		
+-#ifdef BSD
+-		
++#if defined(BSD) || defined(NOIPV6)
+ 		if (getaddrinfo("0.0.0.0", NULL, NULL, &sockAddress) ||
+ #else
+ 		if (getaddrinfo("::", NULL, NULL, &sockAddress) ||
+ #endif
++#ifdef NOIPV6
++			((sockSignaling = socket(sockAddress->ai_family, SOCK_STREAM, AF_INET)) < 0)) {
++#else
+ 			((sockSignaling = socket(sockAddress->ai_family, SOCK_STREAM, 0)) < 0)) {
++#endif
+ 			
+ 			if (sockAddress)
+ 				freeaddrinfo(sockAddress);
+@@ -2328,11 +2336,55 @@ int main(int argc, char *argv[])
+ 		
+ 
+ 		while (1) {
++			struct sockaddr peeraddr;
++			socklen_t peeraddr_len = sizeof(peeraddr);
+ 			PRINTD(1,"main: Before the accept()\n");
+-			if ((newSockSignaling = accept(sockSignaling, NULL, NULL)) < 0) {
++			if ((newSockSignaling = accept(sockSignaling,
++				(struct sockaddr *)&peeraddr,
++				&peeraddr_len)) < 0)
++			{
+ 				reportErrorAndExit("main", "accept",
+ 					"Connection fault on port for signaling");
+ 			}
++#ifdef TCP_WRAPPERS
++			int nierror = 0;
++			int client_allowed = 0;
++			char c_addr[NI_LEN], c_name[NI_LEN];
++
++			/* set up severity variables for libwrap */
++			allow_severity = 0;
++			deny_severity = 0;
++
++			/* get client name and IP address */
++			if(nierror = getnameinfo((struct sockaddr*)&peeraddr,
++				peeraddr_len, (char *)&c_addr, NI_LEN,
++				NULL, NULL, NI_NUMERICHOST))
++			{
++				printf("tcp_wrappers: getnameinfo failed: %s\n",
++					   gai_strerror(nierror));
++				exit(1);
++			}
++			if(getnameinfo((struct sockaddr*)&peeraddr,
++				peeraddr_len, (char *)&c_name, NI_LEN,
++				NULL, NULL, NI_NAMEREQD))
++			{
++				client_allowed = hosts_ctl("ITGRecv",
++							   STRING_UNKNOWN,
++							   c_addr,
++							   STRING_UNKNOWN);
++			} else {
++				client_allowed = hosts_ctl("ITGRecv",
++							   c_name,
++							   c_addr,
++							   STRING_UNKNOWN);
++			}
++			/* hosts_ctl returns 0 if access is denied */
++			if(!client_allowed)
++			{
++				closeSock(newSockSignaling);
++				continue;
++			}
++#endif
+ #ifdef WIN32
+ #ifdef IPv6RECV
+ 			printf("*** New Socket IPv6 created for signaling ***\n");
+Index: src/Makefile
+===================================================================
+--- src/Makefile.orig
++++ src/Makefile
+@@ -35,6 +35,12 @@ ifdef multiport
+ 	CXXOPT += -DMULTIPORT
+ endif
+ 
++# Disable IPv6 if specified on command line.
++ifdef noipv6
++	CXXOPT += -DNOIPV6
++	CXXOPT += -DNOIPV6
++endif
++
+ ##################
+ # Static options # 
+ ##################
+@@ -64,7 +70,7 @@ export CP = cp
+ export MV = mv
+ export SUFFIX =
+ export CXXFLAGS = $(CXXOPT) $(OS) -Wall -Wno-deprecated -fPIC
+-export LDFLAGS = -lpthread -lm $(LDOPT)
++export LDFLAGS = -lpthread -lm -lwrap $(LDOPT)
+ export BASEDIR = $(shell pwd)
+ export BIN = $(BASEDIR)/../bin/
+ export COMMON = $(BASEDIR)/common/
+@@ -120,6 +126,11 @@ ifndef multiport
+ else
+ 	@ echo 'MULTIPORT mode enabled'
+ endif
++ifndef noipv6
++	@ echo 'To disable IPv6 add "noipv6=on" to the make command line'
++else
++	@ echo 'IPv6 disabled'
++endif
+ 	@ echo -e 'NOTE: To change options type: make clean all [options]' 
+ 
+ 
