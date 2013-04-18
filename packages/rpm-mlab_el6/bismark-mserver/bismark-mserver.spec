@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.14
+Version: 0.1.12
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -12,12 +12,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildArch: noarch
 
 # bismark-packaged dependencies
-Requires: netperf = 2.4.5-1bismark4.fc8
-Requires: iperf = 2.0.4-1bismark2.fc8
-Requires: ditg = 2.8.0-0bismark4.rc1.fc8
-Requires: shaperprobe-server = 0.1-1bismark3.fc8
-Requires: socat = 1.7.1.3-1bismark3.fc8
-Requires: paris-traceroute = 0.92-3.fc8
+Requires: netperf = 2.4.5-1bismark4.el6
+Requires: iperf = 2.0.4-1bismark2.el6
+Requires: ditg = 2.8.0-0bismark4.rc1.el6
+Requires: shaperprobe-server = 0.1-1bismark3.el6
+Requires: socat = 1.7.1.3-1bismark3.el6
+Requires: paris-traceroute = 0.92-3.el6
 # fedora-packaged dependencies
 Requires: traceroute
 Requires: iputils
@@ -90,10 +90,6 @@ fi
 
 
 %changelog
-* Wed Apr 18 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.14-1
-- Version increment for consistent updates
-* Wed Apr 17 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.13-1
-- Added reverse-paristraceroute. Also disabled hosts.allow script
 * Wed Oct 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.12-1
 - Disable perfcheck.
 * Tue Aug 14 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.11-1

@@ -1,0 +1,115 @@
+diff --git a/spserver/Makefile b/spserver/Makefile
+index a3458c5..f6e9497 100644
+--- a/spserver/Makefile
++++ b/spserver/Makefile
+@@ -13,7 +13,7 @@ prober.o: prober.c
+ 	$(CC) $(CFLAGS) prober.c tcp_client.c tcpserver.c wrappers.c tbdetect.c
+ 
+ probeserver: probeserver.o
+-	$(CC) $(LFLAGS) -lm probeserver.o wrappers.o tcpserver.o tcp_client.o tbdetect.o measflow.o -o probeserver
++	$(CC) $(LFLAGS) -lm -lwrap probeserver.o wrappers.o tcpserver.o tcp_client.o tbdetect.o measflow.o -o probeserver
+ 
+ probeserver.o: probeserver.c
+ 	$(CC) $(CFLAGS) -DDSERVER probeserver.c wrappers.c tcpserver.c tcp_client.c tbdetect.c measflow.c
+--- a/spserver/probeserver.c
++++ b/spserver/probeserver.c
+@@ -37,6 +37,8 @@
+ #define PROBESERVER_CONFIG "probeserver.conf"
+ #define PROBESERVER_MAX_CLIENTS 1024
+ 
++#define TCP_WRAPPERS /* this should be done with autotools */
++
+ /* Global parameters from config.  */
+ 
+ unsigned int serverip = 0;
+@@ -280,6 +282,9 @@ while(1)
+ 	CHKRET(tcpclientsock);
+ 	//close(tcpsock);
+ 
++#ifdef TCP_WRAPPERS
++	if (tcpclientsock >= 0) {
++#endif
+ 	begintimer();
+ 
+ 	if(getpeername(tcpclientsock, (struct sockaddr *)&saddr, &ssz) == -1)
+@@ -329,9 +334,12 @@ while(1)
+ 	printShaperResult(tbresult, tbmindepth, tbmaxdepth, tbrate, 1, fp);
+ //	recvData(tcpclientsock, fp, 1 /*0 up 1 down*/);
+ 
++	close(tcpclientsock);
++#ifdef TCP_WRAPPERS
++	}
++#endif
+ 	//fclose(fp);
+ 	close(udpsockcap);
+-	close(tcpclientsock);
+ 
+ //	break;
+ }
+diff --git a/spserver/tcpserver.c b/spserver/tcpserver.c
+index 31e4c0c..82d2afc 100644
+--- a/spserver/tcpserver.c
++++ b/spserver/tcpserver.c
+@@ -15,6 +15,14 @@
+ #include "tcpclient.h"
+ #include "diffprobe.h"
+ 
++#define TCP_WRAPPERS /* this should be done with autotools */
++
++#ifdef TCP_WRAPPERS
++#include <netdb.h>
++#include "tcpd.h"
++#define NI_LEN 256
++#endif
++
+ extern unsigned int verbose;
+ 
+ 
+@@ -122,11 +130,46 @@ int handle_clients(int list_s, int udpsock0)
+ 
+ 	return 0;*/
+ 
++	struct sockaddr peeraddr;
++	socklen_t peeraddr_len = sizeof(peeraddr);
++
+ 	int conn_s;
+-	if ( (conn_s = accept(list_s, NULL, NULL) ) < 0 ) {
++	if ( (conn_s = accept(list_s, &peeraddr, &peeraddr_len) ) < 0 ) {
+ 		fprintf(stderr, "SERV: Error calling accept()\n");
+ 		return -1;
+ 	}
++#ifdef TCP_WRAPPERS
++	int nierror = 0;
++	char c_addr[NI_LEN], c_name[NI_LEN];
++
++	/* set up severity variables for libwrap */
++	allow_severity = 0;
++	deny_severity = 0;
++
++	/* get client name and IP address */
++	if(nierror = getnameinfo(&peeraddr, peeraddr_len,
++		&c_addr, NI_LEN, NULL, NULL, NI_NUMERICHOST))
++	{
++		printf("tcp_wrappers: getnameinfo failed: %s\n",
++		       gai_strerror(nierror));
++		exit(1);
++	}
++	if(getnameinfo(&peeraddr, peeraddr_len,
++		&c_name, NI_LEN, NULL, NULL, NI_NAMEREQD))
++	{
++		c_name[0] = '\0';
++	}
++
++	/* hosts_ctl returns 0 if access is denied */
++	if(!hosts_ctl("probeserver",
++		      c_name[0] == '\0' ? STRING_UNKNOWN : c_name,
++		      c_addr,
++		      STRING_UNKNOWN))
++	{
++		close(conn_s);
++		return -2;
++	}
++#endif
+ 	return conn_s;
+ }
+ 
