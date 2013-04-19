@@ -1,6 +1,6 @@
 Summary: BISmark Measurement Server
 Name: bismark-mserver
-Version: 0.1.13
+Version: 0.1.14
 Release: 1%{?dist}
 License: GPLv2
 Group: Applications/Internet
@@ -90,6 +90,10 @@ fi
 
 
 %changelog
+* Wed Apr 18 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.14-1
+- Version increment for consistent updates
+* Wed Apr 17 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.13-1
+- Added reverse-paristraceroute. Also disabled hosts.allow script
 * Wed Oct 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.12-1
 - Disable perfcheck.
 * Tue Aug 14 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.11-1
