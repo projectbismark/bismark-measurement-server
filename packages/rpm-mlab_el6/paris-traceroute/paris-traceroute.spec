@@ -1,6 +1,6 @@
 Name:           paris-traceroute
 Version:        0.92
-Release:        3%{?dist}
+Release:        3bismark1%{?dist}
 Summary:        A network diagnosis and measurement tool
 
 Group:          Development/Languages
@@ -43,6 +43,9 @@ install -Dp -m 0644 man/%{name}.8 %{buildroot}%{_mandir}/man8/%{name}.8
 
 
 %changelog
+* Wed Apr 23 2013 Srikanth Sundaresan <srikanth@gatech.edu> - 0.92-3bismark1
+- Release update for bismark-mserver dependency
+
 * Wed Feb 13 2013 Fabian Affolter <mail@fabian-affolter.ch> - 0.92-3
 - Man page path fixed (BZ #910640)
 
