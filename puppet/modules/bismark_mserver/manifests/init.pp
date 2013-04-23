@@ -3,7 +3,7 @@ class bismark_mserver {
             $puppetversion == '2.7.9') {
         include bismark_mserver::mlab_fc8
     } else {
-    	if ($operatingsystem == 'CentOS' and $operatingsystemrelease == '6.3' and
+    	if ($operatingsystem == 'CentOS' and $operatingsystemrelease == '6.4' and
         	    $puppetversion == '2.7.9') {
         	include bismark_mserver::mlab_el6
 	}
