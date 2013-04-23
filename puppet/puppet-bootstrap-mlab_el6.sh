@@ -2,23 +2,23 @@
 
 cat << "EOF" | sudo tee /etc/yum.repos.d/bismark-mserver.repo > /dev/null
 [bismark-mserver]
-name=Bismark Measurment Server el$releasever.$basearch
-baseurl=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/$basearch/
+name=Bismark Measurment Server el$releasever.$arch
+baseurl=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/$arch/
 enabled=1
 gpgcheck=1
 repo_gpgcheck=1
 gpgkey=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/RPM-GPG-KEY-bismark
 
 [bismark-mserver-debuginfo]
-name=Bismark Measurment Server el$releasever.$basearch - Debug
-baseurl=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/$basearch/debug
+name=Bismark Measurment Server el$releasever.$arch - Debug
+baseurl=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/$arch/debug
 enabled=0
 gpgcheck=1
 repo_gpgcheck=1
 gpgkey=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/RPM-GPG-KEY-bismark
 
 [bismark-mserver-source]
-name=Bismark Measurment Server el$releasever.$basearch - Source
+name=Bismark Measurment Server el$releasever.$arch - Source
 baseurl=http://mserver-mgmt.projectbismark.net/bismark-mserver/mlab_fedora/el$releasever/source/SRPMS
 enabled=0
 gpgcheck=1
