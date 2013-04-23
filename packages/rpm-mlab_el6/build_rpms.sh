@@ -248,9 +248,9 @@ compile_repo()
 
 upload()
 {
-    webdir="$rpmbuild_topdir"/www/mlab_fedora/el8/
+    webdir="$rpmbuild_topdir"/www/mlab_fedora/el6/
     ssh woodrow@beachmont.noise.gatech.edu \
-        "rm -rf ~/bismark-mserver/mlab_fedora/*"
+        "rm -rf ~/bismark-mserver/mlab_fedora/el6/"
     scp -r "$webdir" \
         woodrow@beachmont.noise.gatech.edu:~/bismark-mserver/mlab_fedora/
     echo "RPM repo uploaded to server."
