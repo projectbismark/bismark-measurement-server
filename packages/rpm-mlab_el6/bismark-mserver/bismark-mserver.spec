@@ -90,14 +90,12 @@ fi
 
 
 %changelog
-* Wed Apr 23 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.15-1
+* Tue Apr 23 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.15-1
 - Release update for paris-traceroute
-* Wed Apr 18 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.14-1
+* Thu Apr 18 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.14-1
 - Version increment for consistent updates
 * Wed Apr 17 2013 Srikanth Sundaresan<srikanth@gatech.edu> - 0.1.13-1
 - Added reverse-paristraceroute. Also disabled hosts.allow script
-* Wed Apr 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.12-1
-- Disable perfcheck.
 * Wed Oct 10 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.12-1
 - Disable perfcheck.
 * Tue Aug 14 2012 Stephen Woodrow <woodrow@gatech.edu> - 0.1.11-1
