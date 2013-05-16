@@ -23,8 +23,9 @@ if [ ! -z ${2:-} ]; then
     fi
 fi
 
-ssh $1 "wget https://raw.github.com/projectbismark/bismark-measurement-server/master/puppet/puppet-bootstrap-mlab_el6.sh;" \
+ssh -t $1 "wget https://raw.github.com/ssundaresan/bismark-measurement-server/master/puppet/puppet-bootstrap-mlab_el6.sh;" \
        "chmod +x puppet-bootstrap-mlab_el6.sh;" \
        "$new_cert_line" \
        "./puppet-bootstrap-mlab_el6.sh;" \
-       "rm puppet-bootstrap-mlab_el6.sh;"
+       "rm puppet-bootstrap-mlab_el6.sh;"\
+       "sudo /etc/init.d/bismark-mserver restart;"
