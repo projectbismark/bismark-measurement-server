@@ -55,17 +55,19 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
 gpgcheck=1
 EOF
 
-sudo yum -y clean metadata
-sudo yum -y check-update
-sudo yum -y update
-sudo yum -y install puppet
-sudo yum -y install epel-release
-sudo yum -y install yum-plugin-versionlock
 
+sudo yum -y clean metadata
+sudo yum -y install yum-plugin-versionlock
 sudo yum versionlock netperf-2.4.5-1bismark4.el6
 sudo yum versionlock iperf-2.0.4-1bismark2.el6
 sudo yum versionlock socat-1.7.1.3-1bismark3.el6
 sudo yum versionlock paris-traceroute-0.92-3bismark1.el6
+sudo yum versionlock puppet-server-2.7.9-3.el6
+sudo yum versionlock puppet-2.7.9-3.el6
+sudo yum -y check-update
+sudo yum -y update
+sudo yum -y install puppet
+sudo yum -y install epel-release
 
 # sed line prevent errors due to https://projects.puppetlabs.com/issues/9491
 sudo puppet agent --genconfig \

@@ -111,7 +111,7 @@ class MserverMgmtApp(object):
         self.bottle_app = bottle_app
         db = sqlite3.connect(settings['dbfile'])
         check_sqlite(db)
-        #add_authorized_fqdns(db, additional_fqdns=settings['admin_fqdns'])
+        add_authorized_fqdns(db, additional_fqdns=settings['admin_fqdns'])
         resolve_admin_fqdns()
         db.close()
 
