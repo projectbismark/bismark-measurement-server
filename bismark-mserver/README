@@ -1,7 +1,12 @@
 BISmark Measurement Server (bismark-mserver)
-for Fedora 8 on M-Lab/PlanetLab
+for Fedora 8 and Centos 6.4 and Centos 6.5 on M-Lab/PlanetLab
 
-By Stephen Woodrow <woodrow@gatech.edu> and Walter de Donato
+By
+Srikanth Sundaresan <srikanth@gatech.edu>,
+Guilherme Grillo Martins <ggmartins@gmail.com>,
+Stephen Woodrow <woodrow@gatech.edu>,
+Walter de Donato <walter.dedonato@unina.it>
+
 for Project BISmark <http://projectbismark.net>.
 
 Please see the following URLs for more information about bismark-mserver:
@@ -13,3 +18,4 @@ bismark-mserver relies on the following software packages:
  - DiffProbe/ShaperProbe <http://www.cc.gatech.edu/~partha/diffprobe/shaperprobe.html>
  - D-ITG <http://www.grid.unina.it/software/ITG/>
  - Iperf <http://iperf.sourceforge.net/>
+ - paris-traceroute <http://www.paris-traceroute.net/>
