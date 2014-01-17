@@ -37,9 +37,9 @@ install -Dp -m 0644 man/%{name}.8 %{buildroot}%{_mandir}/man8/%{name}.8
 
 
 %files
-%doc AUTHORS COPYING README
-%{_mandir}/man*/*.8*
-%{_bindir}/%{name}
+%attr(-,root, root) %doc AUTHORS COPYING README
+%attr(-,root, root) %{_mandir}/man*/*.8*
+%attr(-,root, root) %{_bindir}/%{name}
 
 
 %changelog
