@@ -36,7 +36,7 @@ do
     puppet_lrr=$(puppet config print lastrunreport)
     if [ ! -z "$puppet_lrr" ]; then
         puppet_config_version=$(grep 'configuration_version' "$puppet_lrr" | \
-                                awk '{print $NF}')
+                                awk '{gsub(/"/, "", $NF); print $NF}')
         break
     fi
     sleep 2
