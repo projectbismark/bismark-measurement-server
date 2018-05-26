@@ -2,10 +2,10 @@ BISmark Measurement Server (bismark-mserver)
 for Fedora 8 and Centos 6.4 and Centos 6.5 on M-Lab/PlanetLab
 
 By
-Srikanth Sundaresan <srikanth@gatech.edu>,
-Guilherme Grillo Martins <ggmartins@gmail.com>,
-Stephen Woodrow <woodrow@gatech.edu>,
-Walter de Donato <walter.dedonato@unina.it>
+Srikanth Sundaresan <srikanth AT gatech ..>,
+Guilherme Martins <gmartins AT gatech ..>,
+Stephen Woodrow <woodrow AT gatech ..>,
+Walter de Donato <walter.dedonato AT unina ..>
 
 for Project BISmark <http://projectbismark.net>.
 
