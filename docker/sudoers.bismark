@@ -1,0 +1,8 @@
+Cmnd_Alias BISMARK_TRACEROUTE = \
+    /bin/traceroute -n -q 1 -T [0-9]*.[0-9]*.[0-9]*.[0-9]*, \
+    /bin/traceroute -n -q 1 -I [0-9]*.[0-9]*.[0-9]*.[0-9]*, \
+    /bin/traceroute -n -q 1 -w 1 -I [0-9]*.[0-9]*.[0-9]*.[0-9]*, \
+    /usr/bin/paris-traceroute -n -q 1 -T [1-5]000 -p icmp [0-9]*.[0-9]*.[0-9]*.[0-9]*, \
+    /usr/bin/paris-traceroute -n -q 1 -T [1-5]000 -p tcp [0-9]*.[0-9]*.[0-9]*.[0-9]*, \
+    /usr/bin/paris-traceroute -n -q 1 -T [1-5]000 -p udp [0-9]*.[0-9]*.[0-9]*.[0-9]*
+gt_bismark_unpriv ALL = NOPASSWD: BISMARK_TRACEROUTE
